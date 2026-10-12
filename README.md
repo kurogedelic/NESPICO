@@ -50,6 +50,12 @@ python -m nespico.cli --scanlines 262
 python -m nespico.cli --sys-mhz 20 --settle-ns 160 --scanlines 1 # expected failure
 ```
 
+## Development records
+
+- [Development log (2026-10-12)](docs/journal/2026-10-12.md)
+- [Development roadmap](docs/roadmap.md)
+- [Simulation results](docs/benchmark-results.md)
+
 ## Milestones
 
 1. CI timing simulator + executable design assumptions
