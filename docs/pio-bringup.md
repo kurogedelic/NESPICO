@@ -68,3 +68,10 @@ measured here. No PCB has been ordered or represented as electrically validated.
   flash size, layout, or onboard GPIO sharing from these similar names.
 - No board-specific GPIO map was frozen; no firmware was flashed and no physical
   signal or electrical behavior was measured.
+
+## Target-board clarification and follow-up — 2026-10-12
+
+- The target is now specified as the standard, non-wireless **Raspberry Pi Pico 2**, replacing the earlier YD-RP2350A Zero assumption. Raspberry Pi's official documentation lists 26 header GPIOs: GP0–GP22 and GP26–GP28; GP23/24/25/29 serve on-board functions. The PIO CMake guard and CI's alternate map now enforce this header set. GP26–GP28 are ADC-capable and remain valid digital pins for the isolated 3.3 V loopback, but do not overdrive them or drive them while the board is unpowered; GP29 is the VSYS monitor and is not exposed as a header GPIO.
+- The earlier 27-GPIO concept is one pin larger than Pico 2's exposed GPIO set. Stage 2 must reduce the MCU pin count or deliberately use reviewed external logic; no pin map is frozen by this clarification.
+- The already-published branch's `pio-bringup` job passed at `c48e439` before these latest local changes. The current edits have not yet been pushed or run in GitHub Actions. No physical Pico 2 was confirmed on the bench, no firmware was flashed, and no electrical waveform was measured.
+- Official sources: [Pico 2 datasheet](https://pip.raspberrypi.com/documents/RP-008299-DS) and [Raspberry Pi Pico-series board documentation](https://www.raspberrypi.com/documentation/microcontrollers/raspberry-pi-pico.html).

@@ -13,9 +13,14 @@ PIO instruction-count and FIFO-stall status while USB CDC may be active.
   `GPIO6 -> GPIO7`; the strobe outputs are GPIO4 and GPIO8.
 - Check the exact module pinout first. Override the six GPIO values at CMake
   configure time if those pins are unavailable or conflict with board circuitry.
-- CMake rejects GPIO numbers outside 0..29 and duplicate assignments among the
-  six test signals. This is only a configuration sanity check: it cannot confirm
-  module exposure, onboard sharing, voltage safety, or cartridge compatibility.
+- The fixture targets the standard, non-wireless Raspberry Pi Pico 2. CMake
+  accepts only header GPIOs GP0..GP22 and GP26..GP28, and rejects duplicate
+  assignments among the six test signals. GP23/24/25/29 are reserved for
+  on-board functions. GP26..GP28 are ADC-capable but can be used as digital GPIO;
+  their input protection diode means input must not exceed IOVDD by more than
+  about 300 mV, and they must not be driven while the Pico 2 is unpowered. This check cannot
+  establish electrical safety or cartridge compatibility; no GPIO may connect
+  directly to a 5 V cartridge signal.
 - The loopback input pins have internal pull-downs. The outputs start low.
 
 ## Build
@@ -29,13 +34,16 @@ cmake -S firmware/pio_bringup -B build/pio-bringup \
 cmake --build build/pio-bringup
 ```
 
-The output includes `nespico_pio_bringup.uf2`. `pico2` selects the RP2350A
-SDK target for compile validation; confirm the custom board's flash/boot details
-before flashing it. The firmware can also be configured with different GPIOs, e.g.
+The output includes `nespico_pio_bringup.uf2`. `pico2` selects the official
+Raspberry Pi Pico 2 board target for compile validation. The firmware can also
+be configured with different header GPIOs, e.g.
 `-DNESPICO_PIN_A_OUT=...` and corresponding input/strobe/lane-B definitions.
 Invalid values can be checked without hardware: configure once with a duplicate
-such as `-DNESPICO_PIN_A_IN=2`, and once with an out-of-range value such as
-`-DNESPICO_PIN_A_OUT=30`; both configurations must fail before compilation.
+such as `-DNESPICO_PIN_A_IN=2`, an out-of-range value such as
+`-DNESPICO_PIN_A_OUT=30`, and an on-board-reserved pin such as
+`-DNESPICO_PIN_A_OUT=24`; all configurations must fail before compilation.
+The alternate GP20..GP22/GP26..GP28 map in CI is compile-only; it has not been
+physically looped back. The default wiring instructions below use GP2..GP8.
 The source-level PIO instruction and cycle-count consistency check is also
 hardware-independent:
 

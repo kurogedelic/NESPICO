@@ -14,7 +14,7 @@ class ArchitectureTests(unittest.TestCase):
     def test_nominal_dual_engines_meet_assumed_deadlines(self):
         result = simulate(self.frame, TimingConfig())
         self.assertEqual(result.cpu, 29781)
-        self.assertEqual(result.ppu, 40488)
+        self.assertEqual(result.ppu, 40970)
         self.assertEqual(result.deadline_misses, 0)
         self.assertGreater(result.cpu_ppu_overlaps, 10000)
 

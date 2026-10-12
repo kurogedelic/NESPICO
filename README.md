@@ -12,7 +12,7 @@ Physical Famicom 60-pin cartridge
      74-series bus interface
      (latches / transceivers)
                |
-      YD-RP2350A Zero + PIO
+      Raspberry Pi Pico 2 + PIO
                |
            USB Full Speed
                |
@@ -20,7 +20,7 @@ Physical Famicom 60-pin cartridge
    video, audio, controls, dumps
 ```
 
-**Target hardware:** inexpensive YD-RP2350A Zero (RP2350A), 74-series logic, a real 60-pin cartridge connector and USB. No FPGA, HDMI shield or wireless module. GPIO allocation and electrical protection are not yet finalized.
+**Target hardware:** standard non-wireless Raspberry Pi Pico 2 (RP2350), 74-series logic, a real 60-pin cartridge connector and USB. The Pico 2 exposes 26 header GPIOs (GP0–GP22, GP26–GP28); the earlier 27-GPIO concept therefore needs to be reduced or offloaded to external logic. GP26–GP28 are ADC-capable digital pins with input-voltage/power-off constraints; GP29 is the on-board VSYS monitor, not a header pin. No FPGA, HDMI shield or wireless module is planned. GPIO allocation and electrical protection are not finalized.
 
 ## Goals
 
@@ -28,18 +28,18 @@ Physical Famicom 60-pin cartridge
 2. **Dump cartridges.** Read PRG-ROM and CHR-ROM to a host computer over USB, verify dumps, and support applicable mapper-controlled banks and cartridge save RAM.
 3. **Reproduce physical-console behavior.** Keep motherboard RAM across RESET and cartridge replacement with power retained. Test tricks such as **Tennis → Super Mario Bros. World 9**. This is **not** a request for automatic hot-swap detection or live game switching; cartridge removal with power applied also needs electrical safety validation.
 4. **Use the computer as the display.** Stream enough video/audio information over USB for a small PC/Mac viewer, and receive controller input from the host. USB Full Speed means raw full-frame 60fps video is not a feasible default protocol.
-5. **Keep the hardware inexpensive and buildable in a quantity of two.** Prefer off-the-shelf RP2350A Zero boards, inexpensive standard logic and hand-assembled connectors to a custom MCU/FPGA board.
+5. **Keep the hardware inexpensive and buildable in a quantity of two.** Prefer off-the-shelf Pico 2 boards, inexpensive standard logic and hand-assembled connectors to a custom MCU/FPGA board.
 
 ## Development approach
 
 **Simulation first, hardware second.** The host-side simulator models approximate NTSC CPU/PPU bus demand, nominal 74-series/PIO transaction latency, overlapping requests, simplified MMC3 A12 qualification, RESET RAM retention and USB bandwidth assumptions. GitHub Actions runs the tests without any connected hardware.
 
-The simulation is a *screening tool*, not proof that physical timing works. It does not execute actual PIO, emulate a complete 6502/PPU, validate the cartridge voltage interface, or establish real USB throughput.
+The simulation is a *screening tool*, not proof that physical timing works. It does not execute actual PIO, emulate a complete 6502/PPU, validate the cartridge voltage interface, or establish real USB throughput. PPU events use classified 2-dot fetch slots from the documented rendering schedule, but do not include generated PPU addresses or rendering-state changes.
 
 ### Current status
 
-- Host-side deterministic bus-timing simulator and 38 regression tests are present, including exhaustive five-step checks of the abstract shared-bus guard. The local suite and Pico SDK 2.3.1 firmware builds pass; invalid test GPIO maps are rejected before compilation. CI status for this feature branch has not been verified.
-- Firmware CI checks PIO instruction order, sample strobe side-set, loop width, and agreement between the calculated 99 instruction clocks and C constants. It also builds a valid GPIO24–29 boundary map and rejects duplicate, negative, out-of-range, nonnumeric, and leading-zero GPIO assignments. Canonical decimal input avoids C octal-literal ambiguity. These are source/configuration checks, not hardware execution.
+- Host-side deterministic bus-timing simulator and 39 regression tests are present, including exhaustive five-step checks of the abstract shared-bus guard and PPU fetch-slot phase checks. The local suite and Pico SDK 2.3.1 firmware builds pass; invalid test GPIO maps are rejected before compilation. The published feature branch's `pio-bringup` job passed at `c48e439`; newer local changes still require a new CI run.
+- Firmware CI checks PIO instruction order, sample strobe side-set, loop width, and agreement between the calculated 99 instruction clocks and C constants. It builds a second test map using Pico 2 header GPIOs GP20–GP22 and GP26–GP28, and rejects duplicate, malformed, out-of-range, leading-zero, and board-reserved GPIO assignments. These are source/configuration checks, not hardware execution.
 - A one-bit AHCT/LVC level-interface candidate schematic and a 35-case switch-level SPICE screen are now available under `hardware/`; the assumed cartridge release timing is not measured, so this is not electrical sign-off.
 - GPIO pin map, 5V interface, physical timing, accurate NES emulator, cartridge swapping and USB video protocol remain to be validated.
 - **No claim of working cartridge playback or real-device ROM dumping yet.**
@@ -65,7 +65,7 @@ python3 firmware/pio_bringup/validate_pio_source.py
 ## Milestones
 
 1. CI timing simulator + executable design assumptions
-2. PIO bus-pattern generator on RP2350A Zero, measured with loopback and a logic analyzer
+2. PIO bus-pattern generator on Pico 2, measured with loopback and a logic analyzer
 3. 74-series interface prototype: safe NROM PRG/CHR readback
 4. USB dumper with validation and mapper-aware read/write
 5. Real-cart CPU+PPU operation, host video/audio and input

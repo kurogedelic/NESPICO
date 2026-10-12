@@ -1,6 +1,6 @@
 # Roadmap
 
-The objective is a **two-unit prototype** of a USB-connected Famicom cartridge dumper and real-cartridge NES console. Start with YD-RP2350A Zero + 74-series logic, no FPGA, no HDMI or Wi-Fi. The computer displays video/audio and forwards controls, while the RP2350 executes the emulator and talks to actual cartridge PRG/CHR buses.
+The objective is a **two-unit prototype** of a USB-connected Famicom cartridge dumper and real-cartridge NES console. Start with a standard non-wireless Raspberry Pi Pico 2 + 74-series logic, no FPGA, no HDMI or Wi-Fi. Pico 2 exposes 26 header GPIOs, so the earlier 27-GPIO concept must be reduced or offloaded to external logic before pin mapping. The computer displays video/audio and forwards controls, while the RP2350 executes the emulator and talks to actual cartridge PRG/CHR buses.
 
 ## Stage 0 — Host-side verification (in progress)
 
@@ -10,23 +10,24 @@ The objective is a **two-unit prototype** of a USB-connected Famicom cartridge d
 - [x] Add basic RESET RAM retention and partial MMC3 A12 tests.
 - [x] Commit 21 Python regression tests and a GitHub Actions workflow.
 - [x] Verify green GitHub Actions results on the main branch.
+- [x] Add NESdev-timed 170-slot PPU fetch phases per rendering scanline; addresses and CPU instruction traces remain synthetic/unknown.
 - [ ] Replace synthetic bus events with vetted 6502 instruction and PPU fetch traces.
 - [ ] Model actual M2 phases, latch writes, /OE, IRQ, CIRAM, read/write turnarounds and bus contention.
   - [x] Add a host-only abstract data-bus owner guard with a tested disabled step on driver handoff; this does not model real strobes, timing, or electrical behavior.
 
 **Pass condition:** reproducible CI and timing simulations with assumptions explicitly labeled. Host simulation cannot prove hardware performance.
 
-## Stage 1 — Real PIO proof on the existing RP2350A Zero
+## Stage 1 — Real PIO proof on Raspberry Pi Pico 2
 
 - [x] Add a Pico SDK 2.3.1 build target and a first real PIO assembly loopback sequencer.
 - [x] Define a test-only dual-lane GPIO map and command/data format; do not treat it as the cartridge pin map.
 - [x] Add synchronized CPU/PPU-like state-machine streams and report instruction-cycle and FIFO stall status.
 - [x] Add a GitHub Actions firmware build workflow.
-- [x] Reject duplicate, malformed, leading-zero, and out-of-range test-fixture GPIO assignments during CMake configuration; build the GPIO24–29 boundary map in firmware CI.
+- [x] Reject duplicate, malformed, leading-zero, out-of-range, and Pico 2 board-reserved test GPIO assignments during CMake configuration; build a second header map using GP20–GP22/GP26–GP28 in firmware CI.
 - [x] Add a hardware-independent source check for PIO instruction order, sample strobe, and cycle-count agreement; run it in firmware CI.
 - [x] Build locally against Pico SDK 2.3.1 and verify the UF2 identifies as RP2350.
-- [ ] Confirm the new GitHub Actions firmware build on the feature branch.
-- [ ] Confirm exact board model and physically exposed test GPIOs.
+- [x] Confirm the `pio-bringup` GitHub Actions job succeeds on the published feature branch (latest verified commit before this update: `c48e439`).
+- [x] Record standard Pico 2 as the target and identify its header GPIOs from Raspberry Pi's official board documentation; physical board presence and jumper wiring are not yet verified.
 - [ ] Verify sample strobes and loopback waveforms on the board with USB active.
 - [ ] Add a real 8-bit latch/transceiver transaction path and measure FIFO/DMA starvation.
 - [ ] Measure worst-case producer timing for simultaneous CPU/PPU requests.
@@ -36,7 +37,7 @@ The objective is a **two-unit prototype** of a USB-connected Famicom cartridge d
 ## Stage 2 — Complete electrical interface before PCB
 
 - [ ] Enumerate each 60-pin cartridge signal, direction, voltage, required timing and ownership.
-- [ ] Finalize the **27 GPIO plus 74-series** map; check physically available pins on the Zero.
+- [ ] Reconcile the **27-GPIO concept** with Pico 2's 26 header GPIOs; assign a smaller GPIO map plus external logic, or revise the MCU choice.
 - [ ] Choose precise latch/buffer/voltage-interface part numbers, validating 3.3 V output recognition at 5 V loads.
 - [ ] Verify bus isolation and safe default levels during reset, boot, and cartridge removal.
 - [x] Draft a one-bit SN74AHCT244/SN74LVC244A candidate slice and a 35-case switch-level OE-turnaround sweep; this does not select final parts or validate real cartridge timing.
@@ -75,12 +76,12 @@ The objective is a **two-unit prototype** of a USB-connected Famicom cartridge d
 ## Stop / pivot rules
 
 - If CPU + PPU + PIO + USB cannot meet measured real-time deadlines, stop before PCB fabrication and reassess pipelining or MCU architecture.
-- If the 27-pin design is too fragile, consider a GPIO-richer RP2350B module rather than endlessly adding glue logic.
+- If the required signals cannot fit within Pico 2's 26 header GPIOs plus a reviewed external-logic design, compare a GPIO-richer RP2350B board before PCB release.
 - If real-time USB video is too costly, test palette/delta/PPU-command protocols and move reconstruction to the host.
 - If full live-cart playback stalls, finish a modest and reliable **ROM dumper** instead of expanding scope.
 
 ## Next action
 
-**Build and flash the test-only dual-lane PIO loopback firmware on the exact RP2350A Zero.** Verify the two GPIO jumpers and synchronized strobes with a logic analyzer while USB is active. Then replace the serial test lane with an 8-bit latch/transceiver transaction engine and measure deadlines before freezing any cartridge-bus pin map or ordering PCBs.
+**Build and flash the test-only dual-lane PIO loopback firmware on the standard Pico 2.** Verify the two 3.3 V GPIO jumpers and synchronized strobes with a logic analyzer while USB is active. Then replace the serial test lane with an 8-bit latch/transceiver transaction engine and measure deadlines before freezing any cartridge-bus pin map or ordering PCBs.
 
 Related: [development log](journal/2026-10-12.md) · [architecture](architecture.md) · [simulation results](benchmark-results.md) · [PIO bring-up checkpoint](pio-bringup.md).

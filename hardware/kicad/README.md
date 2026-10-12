@@ -29,7 +29,7 @@ The generation script expects a KiCad installation whose standard symbol files l
 
 ## Deliberate omissions / blockers before a board design
 
-- No actual YD-RP2350A Zero GPIO pin selection, module footprint, or routing is assigned; the module's physical pinout has not been verified.
+- No Pico 2 GPIO pin selection, board footprint, or routing is assigned. Its 26 header GPIOs are documented, but the project-level allocation remains open; no MCU pin should be assumed from this one-bit functional slice.
 - `MCU_D0` and `CART_D0` are functional net names only. The Famicom connector pin is deliberately not assigned because this sheet does not yet distinguish every bus timing/use case.
 - No complete bus-wide design, address/control signals, reset, connector, protection, cartridge 5-V source, 3.3-V regulator, power sequencing, ESD network, or decoupling placement is included.
 - Semiconductor packages/footprints and passive footprints are blank. Choose an exact orderable part/package and recheck the applicable full datasheet before layout.

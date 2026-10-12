@@ -28,7 +28,7 @@ jobs:
           path: pico-sdk
           submodules: recursive
 
-      - name: Configure RP2350A build
+      - name: Configure Raspberry Pi Pico 2 build
         run: >-
           cmake -S firmware/pio_bringup -B build/pio-bringup -G Ninja
           -DPICO_BOARD=pico2
@@ -37,18 +37,18 @@ jobs:
       - name: Build UF2
         run: cmake --build build/pio-bringup --parallel
 
-      - name: Build valid GPIO boundary map
+      - name: Build valid Pico 2 header GPIO map
         run: |
-          cmake -S firmware/pio_bringup -B build/pio-map-edge-valid -G Ninja \
+          cmake -S firmware/pio_bringup -B build/pio-map-pico2-header -G Ninja \
             -DPICO_BOARD=pico2 \
             -DPICO_SDK_PATH=${{ github.workspace }}/pico-sdk \
-            -DNESPICO_PIN_A_OUT=24 \
-            -DNESPICO_PIN_A_IN=25 \
-            -DNESPICO_PIN_A_STROBE=26 \
-            -DNESPICO_PIN_B_OUT=27 \
-            -DNESPICO_PIN_B_IN=28 \
-            -DNESPICO_PIN_B_STROBE=29
-          cmake --build build/pio-map-edge-valid --parallel
+            -DNESPICO_PIN_A_OUT=20 \
+            -DNESPICO_PIN_A_IN=21 \
+            -DNESPICO_PIN_A_STROBE=22 \
+            -DNESPICO_PIN_B_OUT=26 \
+            -DNESPICO_PIN_B_IN=27 \
+            -DNESPICO_PIN_B_STROBE=28
+          cmake --build build/pio-map-pico2-header --parallel
 
       - name: Verify invalid loopback GPIO maps are rejected
         run: |
@@ -67,7 +67,7 @@ jobs:
             echo "Expected out-of-range GPIO assignment to fail configuration"
             exit 1
           fi
-          grep -q "outside the RP2350A GPIO range 0..29" build/bad-range.log
+          grep -q "outside the RP2350 GPIO range 0..29" build/bad-range.log
 
       - name: Verify malformed GPIO maps are rejected
         run: |
@@ -95,5 +95,9 @@ jobs:
             -DNESPICO_PIN_A_OUT=010
           check_rejected bad-leading-zero-invalid-octal "must not use leading zeros" \
             -DNESPICO_PIN_A_OUT=08
+          check_rejected bad-pico2-reserved-gpio "not a Raspberry Pi Pico 2 header GPIO" \
+            -DNESPICO_PIN_A_OUT=24
+          check_rejected bad-pico2-gpio29 "not a Raspberry Pi Pico 2 header GPIO" \
+            -DNESPICO_PIN_A_OUT=29
           check_rejected bad-cross-lane-duplicate "duplicate GPIO assignment" \
             -DNESPICO_PIN_B_OUT=2

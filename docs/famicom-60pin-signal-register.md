@@ -93,7 +93,7 @@ These are protocol-level notes from the NESdev signal descriptions, not complete
 
 ## Electrical and architecture holds
 
-1. **No direct RP2350-to-cartridge bus wiring is approved by this register.** Select buffers/transceivers only after checking the exact MCU module, supply domain, pin limits, guaranteed input/output thresholds, loading, and powered-off behavior against the relevant datasheets.
+1. **No direct RP2350-to-cartridge bus wiring is approved by this register.** Select buffers/transceivers only after checking the exact MCU module, supply domain, pin limits, guaranteed input/output thresholds, loading, and powered-off behavior against the relevant datasheets. On standard Pico 2, GP26–GP28 are ADC-capable header GPIOs with an input diode to IOVDD; keep them within the 3.3 V domain and do not drive them while the MCU is unpowered. GP29 is used on-board for VSYS/3 measurement and is not a header GPIO.
    The RP2350 datasheet distinguishes standard and fault-tolerant (FT) pads: at IOVDD=3.3 V it lists a standard-pad absolute maximum of IOVDD+0.5 V, while an FT pad is listed up to 5.5 V only with IOVDD present. Its electrical table lists FT VIH(min)=2.0 V and GPIO VOH(min)=2.62 V at IOVDD=3.3 V under the stated drive-current conditions. These are chip-level limits, not a universal 5 V interface guarantee: the exact pad class and module routing are unverified, FT voltage tolerance does not establish powered-off/hot-plug safety, and the output HIGH is not guaranteed to satisfy every 5 V receiver.
 2. Hold all bus transceiver `/OE` controls in a safe disabled state during reset, boot, fault, and cartridge insertion/removal; prove there is no opposing drive during CPU/PPU read/write turnaround.
 3. Provide a separately reviewed 5 V cartridge rail at pin 30. Establish current, inrush, short-circuit and reverse-current limits plus rail sequencing before connecting a real cartridge.
@@ -106,7 +106,7 @@ These are protocol-level notes from the NESdev signal descriptions, not complete
 - Verify the exact 60-pin connector part, footprint drawing, card thickness/contact dimensions, and pin numbering/orientation.
 - Resolve pin 31 behavior and independently verify the pin 49 PPU A13 polarity/name on a primary hardware reference.
 - Decide how CPU/PPU address latches, bidirectional data buffers, bus ownership, reset defaults, CIRAM, IRQ, and analog audio are implemented.
-- Assign the 27-GPIO-plus-logic map against the **physically exposed** pins of the exact YD-RP2350A Zero revision; reserve USB/debug/boot functions as needed.
+- Assign the project signals against the standard Pico 2's 26 header GPIOs (GP0–GP22, GP26–GP28), reserving board-internal GP23/24/25/29 and USB/debug/boot functions as needed. The earlier 27-GPIO concept exceeds the available header GPIO count and must be reduced or offloaded to external logic.
 - Derive quantitative timing and electrical constraints from selected component datasheets and actual bus measurements before schematic review or PCB release.
 
 ## Sources
@@ -114,3 +114,4 @@ These are protocol-level notes from the NESdev signal descriptions, not complete
 - [NESdev Wiki — Cartridge connector](https://www.nesdev.org/wiki/Cartridge_connector), accessed 2026-10-12. Primary reference for the 60-pin diagram, console-viewpoint directions, pin 31 revision note, and signal behavior summaries.
 - [ConsoleMods Wiki — Connector Pinouts](https://consolemods.org/wiki/NES:Connector_Pinouts), accessed 2026-10-12. Cross-check for pin numbers, connector-side numbering convention, and audio direction; it abbreviates pin 49 as PPU A13, so polarity remains an open verification item rather than being silently normalized.
 - [Raspberry Pi — RP2350 Datasheet](https://pip.raspberrypi.com/documents/RP-008373-DS-rp2350-datasheet.pdf) and [Hardware design with RP2350](https://pip.raspberrypi.com/documents/RP-008280-DS-hardware-design-with-rp2350.pdf), accessed 2026-10-12. Required primary references for later GPIO, module, power, and board-level review; no pin-level voltage guarantee is asserted here.
+- [Raspberry Pi — Pico 2 Datasheet](https://pip.raspberrypi.com/documents/RP-008299-DS), accessed 2026-10-12. Primary source for the Pico 2 header GPIO set, board-internal GPIO functions, and ADC-capable input caveat.
