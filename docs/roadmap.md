@@ -1,6 +1,6 @@
 # Roadmap
 
-The objective is a **two-unit prototype** of a USB-connected Famicom cartridge dumper and real-cartridge NES console. Start with a standard non-wireless Raspberry Pi Pico 2 + 74-series logic, no FPGA, no HDMI or Wi-Fi. Pico 2 exposes 26 header GPIOs, so the earlier 27-GPIO concept must be reduced or offloaded to external logic before pin mapping. The computer displays video/audio and forwards controls, while the RP2350 executes the emulator and talks to actual cartridge PRG/CHR buses.
+The objective is a **two-unit prototype** of a USB-connected Famicom cartridge dumper and real-cartridge NES console. Start with a standard non-wireless Raspberry Pi Pico 2 + 74-series logic, no FPGA, no HDMI or Wi-Fi. By user direction, reserve GP26–GP28 (ADC0–ADC2) for analog inputs; GP29/ADC3 is Pico 2's internal VSYS/3 monitor and is not a header GPIO. This leaves 23 digital header GPIOs GP0–GP22, so the earlier 27-GPIO concept must move at least four functions into external logic or be revised before pin mapping. The computer displays video/audio and forwards controls, while the RP2350 executes the emulator and talks to actual cartridge PRG/CHR buses.
 
 ## Stage 0 — Host-side verification (in progress)
 
@@ -37,7 +37,9 @@ The objective is a **two-unit prototype** of a USB-connected Famicom cartridge d
 ## Stage 2 — Complete electrical interface before PCB
 
 - [ ] Enumerate each 60-pin cartridge signal, direction, voltage, required timing and ownership.
-- [ ] Reconcile the **27-GPIO concept** with Pico 2's 26 header GPIOs; assign a smaller GPIO map plus external logic, or revise the MCU choice.
+- [x] Reserve GP26–GP28 for ADC0–ADC2; keep GP29/ADC3 reserved for the Pico 2's VSYS/3 monitor.
+- [ ] Reconcile the **27-GPIO concept** with the 23 digital GPIOs available under this ADC reservation; assign a smaller GPIO map plus external logic, or revise the architecture.
+- [ ] Review external-logic options in [`hardware/kicad/board-plan.md`](../hardware/kicad/board-plan.md) against a complete named signal list and real PIO timing.
 - [ ] Choose precise latch/buffer/voltage-interface part numbers, validating 3.3 V output recognition at 5 V loads.
 - [ ] Verify bus isolation and safe default levels during reset, boot, and cartridge removal.
 - [x] Draft a one-bit SN74AHCT244/SN74LVC244A candidate slice and a 35-case switch-level OE-turnaround sweep; this does not select final parts or validate real cartridge timing.
@@ -76,7 +78,7 @@ The objective is a **two-unit prototype** of a USB-connected Famicom cartridge d
 ## Stop / pivot rules
 
 - If CPU + PPU + PIO + USB cannot meet measured real-time deadlines, stop before PCB fabrication and reassess pipelining or MCU architecture.
-- If the required signals cannot fit within Pico 2's 26 header GPIOs plus a reviewed external-logic design, compare a GPIO-richer RP2350B board before PCB release.
+- If the required signals cannot fit within the 23 digital GPIOs available under the ADC reservation plus a reviewed external-logic design, compare a GPIO-richer RP2350B board before PCB release.
 - If real-time USB video is too costly, test palette/delta/PPU-command protocols and move reconstruction to the host.
 - If full live-cart playback stalls, finish a modest and reliable **ROM dumper** instead of expanding scope.
 

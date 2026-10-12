@@ -10,10 +10,11 @@ Standard, non-wireless Raspberry Pi Pico 2 + inexpensive 74-series logic + physi
 - Independent 74AHCT574 address holding registers, with safe strobes.
 - GPIO or PIO control of CPU M2, R/W, /ROMSEL and PPU /RD, /WR.
 - Cartridge IRQ, CIRAM control and mapper writes must be supported.
-- Verify **every** signal with NESdev cartridge connector pinout before PCB design. Pico 2 exposes 26 header GPIOs (GP0–GP22 and GP26–GP28); the prior 27-GPIO concept cannot map one-to-one and must be reduced or offloaded to external logic. Neither option is yet a validated pin map.
-- Pico 2 GP26–GP28 are ADC-capable header pins and may serve as digital GPIO only in their 3.3 V domain; the board datasheet warns of input-diode leakage when unpowered. GP29 is used internally to measure VSYS/3. Keep all cartridge 5 V signals behind a reviewed interface with powered-off isolation.
+- Verify **every** signal with the NESdev cartridge connector pinout before PCB design. Pico 2 exposes 26 header GPIOs (GP0–GP22 and GP26–GP28). For this design GP26–GP28 (ADC0–ADC2) are reserved for analog inputs, leaving 23 digital GPIOs GP0–GP22; the prior 27-GPIO concept therefore needs at least four functions moved to external logic or a revised architecture. No complete pin map is frozen.
+- GP26–GP29 are ADC-capable RP2350 pins. GP26–GP28 are ADC header pins reserved for analog inputs in this design and have input-voltage/power-off constraints. GP29 (ADC3) is used by the Pico 2 board to measure VSYS/3 and is not an external header GPIO. Keep all cartridge 5 V signals behind a reviewed interface with powered-off isolation.
 - The [RP2350 datasheet](https://pip.raspberrypi.com/documents/RP-008373-DS-rp2350-datasheet.pdf) distinguishes standard and FT pads: at IOVDD=3.3 V, FT input tolerance up to 5.5 V is conditional on IOVDD being present and does not establish output compatibility, powered-off safety, or hot-insertion survival. The Pico 2 exposes documented header GPIOs, but every selected signal still needs a part-level interface review. Include OE defaults, transceiver voltage compatibility, ESD, rail sequencing and safe RESET handling in hardware revision.
 - A source-checked but explicitly non-final connector inventory is in [the Famicom 60-pin signal register](famicom-60pin-signal-register.md); it leaves GPIO assignment and electrical design open.
+- The candidate external-logic split and GPIO budget are recorded in [the Pico 2 board plan](../hardware/kicad/board-plan.md); it is not a frozen map or a fabrication release.
 
 ## Model's timing assumptions
 

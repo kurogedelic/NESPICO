@@ -20,7 +20,7 @@ Physical Famicom 60-pin cartridge
    video, audio, controls, dumps
 ```
 
-**Target hardware:** standard non-wireless Raspberry Pi Pico 2 (RP2350), 74-series logic, a real 60-pin cartridge connector and USB. The Pico 2 exposes 26 header GPIOs (GP0–GP22, GP26–GP28); the earlier 27-GPIO concept therefore needs to be reduced or offloaded to external logic. GP26–GP28 are ADC-capable digital pins with input-voltage/power-off constraints; GP29 is the on-board VSYS monitor, not a header pin. No FPGA, HDMI shield or wireless module is planned. GPIO allocation and electrical protection are not finalized.
+**Target hardware:** standard non-wireless Raspberry Pi Pico 2 (RP2350), 74-series logic, a real 60-pin cartridge connector and USB. The Pico 2 exposes 26 header GPIOs (GP0–GP22, GP26–GP28). For this design, GP26–GP28 are reserved for ADC0–ADC2 analog inputs; GP29 is ADC3 used by the board's VSYS monitor and is not a header GPIO. This leaves **23 digital GPIOs (GP0–GP22)**, so the earlier 27-GPIO concept must move at least four functions into external logic or be redesigned. No FPGA, HDMI shield or wireless module is planned. GPIO allocation and electrical protection are not finalized; see the [board architecture proposal](hardware/kicad/board-plan.md).
 
 ## Goals
 
@@ -59,7 +59,7 @@ python3 firmware/pio_bringup/validate_pio_source.py
 - [Development roadmap](docs/roadmap.md)
 - [Simulation results](docs/benchmark-results.md)
 - [PIO bring-up checkpoint](docs/pio-bringup.md)
-- [Preliminary one-bit KiCad interface slice](hardware/kicad/README.md)
+- [Preliminary one-bit KiCad interface slice](hardware/kicad/README.md) and [Pico 2 board architecture proposal](hardware/kicad/board-plan.md)
 - [Bus-turnaround SPICE screening model](hardware/spice/README.md)
 
 ## Milestones
@@ -73,6 +73,6 @@ python3 firmware/pio_bringup/validate_pio_source.py
 
 See [architecture notes](docs/architecture.md) and [simulation results](docs/benchmark-results.md). The extra pipeline tests model the CPU/PPU work required to prepare addresses; they show that nominal bus-only timing success is not sufficient.
 
-The first Pico SDK / PIO firmware target is a **test-only dual-lane GPIO loopback** under `firmware/pio_bringup/`. It is intentionally not a cartridge bus driver; see its [build and safety instructions](firmware/pio_bringup/README.md). A board-specific pinout and real logic-analyzer measurements are still required before cartridge-interface or PCB work.
+The first Pico SDK / PIO firmware target is a **test-only dual-lane GPIO loopback** under `firmware/pio_bringup/`. It is intentionally not a cartridge bus driver; see its [build and safety instructions](firmware/pio_bringup/README.md). A board-specific pinout and real logic-analyzer measurements are still required before freezing a cartridge interface or releasing PCB files for fabrication.
 
 Reference documentation: [NESdev cartridge connector](https://www.nesdev.org/wiki/Cartridge_connector), [PPU rendering](https://www.nesdev.org/wiki/PPU_rendering), [MMC3](https://www.nesdev.org/wiki/MMC3), [RP2350](https://www.raspberrypi.com/documentation/microcontrollers/silicon.html).

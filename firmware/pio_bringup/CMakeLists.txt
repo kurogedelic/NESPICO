@@ -21,8 +21,9 @@ set(NESPICO_PIN_B_STROBE 8 CACHE STRING "GPIO for loopback lane B sample strobe"
 
 # The fixture targets the standard, non-wireless Raspberry Pi Pico 2. Permit
 # only header GPIOs; GPIO23/24/25/29 are used by on-board functions. GPIO26-28
-# are ADC-capable header GPIOs and are allowed for 3.3 V digital loopback, but
-# this check does not establish that an external connection is electrically safe.
+# (ADC0-ADC2) are permitted here only for the isolated 3.3 V test fixture. The
+# NESPICO board design reserves them for analog inputs; this check does not
+# establish product pin allocation or external electrical safety.
 set(_nespico_pico2_header_gpios
     0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 26 27 28
 )

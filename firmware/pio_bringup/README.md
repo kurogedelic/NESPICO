@@ -15,12 +15,15 @@ PIO instruction-count and FIFO-stall status while USB CDC may be active.
   configure time if those pins are unavailable or conflict with board circuitry.
 - The fixture targets the standard, non-wireless Raspberry Pi Pico 2. CMake
   accepts only header GPIOs GP0..GP22 and GP26..GP28, and rejects duplicate
-  assignments among the six test signals. GP23/24/25/29 are reserved for
-  on-board functions. GP26..GP28 are ADC-capable but can be used as digital GPIO;
-  their input protection diode means input must not exceed IOVDD by more than
-  about 300 mV, and they must not be driven while the Pico 2 is unpowered. This check cannot
-  establish electrical safety or cartridge compatibility; no GPIO may connect
-  directly to a 5 V cartridge signal.
+  assignments among the six **test-only** signals. The CI alternate map uses
+  GP26..GP28 as isolated 3.3 V digital loopback pins only; the NESPICO board
+  design reserves these ADC0..ADC2 pins for analog inputs and will not use them
+  for cartridge digital buses. GP29 is ADC3 but is used internally for VSYS/3
+  monitoring and is not a header GPIO. GP23/24/25 are also reserved for board
+  functions. The ADC-capable pins have input-voltage/power-off constraints and
+  must not be driven while the Pico 2 is unpowered. These checks cannot establish
+  electrical safety or cartridge compatibility; no GPIO may connect directly
+  to a 5 V cartridge signal.
 - The loopback input pins have internal pull-downs. The outputs start low.
 
 ## Build

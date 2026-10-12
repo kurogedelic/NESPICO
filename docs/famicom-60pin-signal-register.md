@@ -93,7 +93,7 @@ These are protocol-level notes from the NESdev signal descriptions, not complete
 
 ## Electrical and architecture holds
 
-1. **No direct RP2350-to-cartridge bus wiring is approved by this register.** Select buffers/transceivers only after checking the exact MCU module, supply domain, pin limits, guaranteed input/output thresholds, loading, and powered-off behavior against the relevant datasheets. On standard Pico 2, GP26–GP28 are ADC-capable header GPIOs with an input diode to IOVDD; keep them within the 3.3 V domain and do not drive them while the MCU is unpowered. GP29 is used on-board for VSYS/3 measurement and is not a header GPIO.
+1. **No direct RP2350-to-cartridge bus wiring is approved by this register.** Select buffers/transceivers only after checking the exact MCU module, supply domain, pin limits, guaranteed input/output thresholds, loading, and powered-off behavior against the relevant datasheets. RP2350 GP26–GP29 are ADC0–ADC3-capable. On standard Pico 2, GP26–GP28 are header pins; this design reserves them for ADC0–ADC2 analog inputs, with input-voltage and power-off constraints, and does not allocate them to cartridge digital buses. GP29/ADC3 is used on-board for VSYS/3 measurement and is not an external header GPIO.
    The RP2350 datasheet distinguishes standard and fault-tolerant (FT) pads: at IOVDD=3.3 V it lists a standard-pad absolute maximum of IOVDD+0.5 V, while an FT pad is listed up to 5.5 V only with IOVDD present. Its electrical table lists FT VIH(min)=2.0 V and GPIO VOH(min)=2.62 V at IOVDD=3.3 V under the stated drive-current conditions. These are chip-level limits, not a universal 5 V interface guarantee: the exact pad class and module routing are unverified, FT voltage tolerance does not establish powered-off/hot-plug safety, and the output HIGH is not guaranteed to satisfy every 5 V receiver.
 2. Hold all bus transceiver `/OE` controls in a safe disabled state during reset, boot, fault, and cartridge insertion/removal; prove there is no opposing drive during CPU/PPU read/write turnaround.
 3. Provide a separately reviewed 5 V cartridge rail at pin 30. Establish current, inrush, short-circuit and reverse-current limits plus rail sequencing before connecting a real cartridge.
@@ -106,7 +106,7 @@ These are protocol-level notes from the NESdev signal descriptions, not complete
 - Verify the exact 60-pin connector part, footprint drawing, card thickness/contact dimensions, and pin numbering/orientation.
 - Resolve pin 31 behavior and independently verify the pin 49 PPU A13 polarity/name on a primary hardware reference.
 - Decide how CPU/PPU address latches, bidirectional data buffers, bus ownership, reset defaults, CIRAM, IRQ, and analog audio are implemented.
-- Assign the project signals against the standard Pico 2's 26 header GPIOs (GP0–GP22, GP26–GP28), reserving board-internal GP23/24/25/29 and USB/debug/boot functions as needed. The earlier 27-GPIO concept exceeds the available header GPIO count and must be reduced or offloaded to external logic.
+- Assign the project signals against the standard Pico 2's 23 available digital GPIOs GP0–GP22; reserve GP26–GP28 for ADC0–ADC2 and GP29/ADC3 for the board's VSYS/3 monitor. The earlier 27-GPIO concept is at least four functions over budget and must be reduced or offloaded to external logic. See the [board architecture proposal](../hardware/kicad/board-plan.md).
 - Derive quantitative timing and electrical constraints from selected component datasheets and actual bus measurements before schematic review or PCB release.
 
 ## Sources

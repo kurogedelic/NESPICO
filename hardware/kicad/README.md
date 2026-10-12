@@ -16,6 +16,7 @@ This is a **candidate topology sketch**, not a complete interface schematic and 
 - `NESPICO_Interface.net` — KiCad-exported connectivity snapshot.
 - `generate_preliminary.py` — regenerates the local symbol library and schematic using installed KiCad standard library symbols.
 - `validate_preliminary.py` — independently exports KiCad XML netlist and asserts the D0 path, enable nets, supply/GND ties, and NC outputs.
+- `board-plan.md` — GP26–GP28 ADC reservation, 23-pin budget, and candidate external-logic partitions; not a frozen design.
 
 From the repository root:
 

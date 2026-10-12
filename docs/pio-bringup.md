@@ -75,3 +75,10 @@ measured here. No PCB has been ordered or represented as electrically validated.
 - The earlier 27-GPIO concept is one pin larger than Pico 2's exposed GPIO set. Stage 2 must reduce the MCU pin count or deliberately use reviewed external logic; no pin map is frozen by this clarification.
 - Commit `8f26041` was pushed to `work/rp2350-pio-bringup`; both the host-simulation and `pio-bringup` GitHub Actions workflows passed for that commit. No physical Pico 2 was confirmed on the bench, no firmware was flashed, and no electrical waveform was measured.
 - Official sources: [Pico 2 datasheet](https://pip.raspberrypi.com/documents/RP-008299-DS) and [Raspberry Pi Pico-series board documentation](https://www.raspberrypi.com/documentation/microcontrollers/raspberry-pi-pico.html).
+
+## ADC reservation and updated board pin budget — 2026-10-12
+
+- By user direction, reserve GP26–GP28 for ADC0–ADC2 analog inputs in the NESPICO board design; do not allocate them to digital cartridge-bus signals. GP29 is ADC3 but remains the Pico 2's internal VSYS/3 monitor and is not an external GPIO.
+- This leaves 23 digital GPIOs, GP0–GP22, for the project. The earlier 27-GPIO concept is now at least four functions over budget; its complete named signal list has not yet been recovered. The candidate lane partition and external-logic options are in [`hardware/kicad/board-plan.md`](../hardware/kicad/board-plan.md).
+- The PIO CI map using GP26–GP28 remains an isolated 3.3 V digital loopback test only; it does not change the product-board ADC reservation.
+- No GPIO map, full cartridge schematic, PCB layout, BOM, or fabrication release is implied. The existing one-bit KiCad slice remains preliminary.
