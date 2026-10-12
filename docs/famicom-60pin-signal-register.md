@@ -106,7 +106,7 @@ These are protocol-level notes from the NESdev signal descriptions, not complete
 - Verify the exact 60-pin connector part, footprint drawing, card thickness/contact dimensions, and pin numbering/orientation.
 - Resolve pin 31 behavior and independently verify the pin 49 PPU A13 polarity/name on a primary hardware reference.
 - Decide how CPU/PPU address latches, bidirectional data buffers, bus ownership, reset defaults, CIRAM, IRQ, and analog audio are implemented.
-- Assign the project signals against the standard Pico 2's 23 available digital GPIOs GP0–GP22; reserve GP26–GP28 for ADC0–ADC2 and GP29/ADC3 for the board's VSYS/3 monitor. The earlier 27-GPIO concept is at least four functions over budget and must be reduced or offloaded to external logic. See the [board architecture proposal](../hardware/kicad/board-plan.md).
+- A Rev.A logical candidate now assigns the standard Pico 2's GP0–GP22 and keeps GP26–GP28 analog-only; GP29/ADC3 remains the board's internal VSYS/3 monitor. The map is not a frozen physical header or firmware contract, and ADC source range/impedance still needs review. See the [board architecture proposal](../hardware/kicad/board-plan.md) and [Rev.A circuit spec](../hardware/kicad/rev-a-circuit-spec.md).
 - Derive quantitative timing and electrical constraints from selected component datasheets and actual bus measurements before schematic review or PCB release.
 
 ## Sources
