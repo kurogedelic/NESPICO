@@ -38,7 +38,7 @@ The simulation is a *screening tool*, not proof that physical timing works. It d
 
 ### Current status
 
-- Host-side deterministic bus-timing simulator and 39 regression tests are present, including exhaustive five-step checks of the abstract shared-bus guard and PPU fetch-slot phase checks. The local suite and Pico SDK 2.3.1 firmware builds pass; invalid test GPIO maps are rejected before compilation. The published feature branch's `pio-bringup` job passed at `c48e439`; newer local changes still require a new CI run.
+- Host-side deterministic bus-timing simulator and 39 regression tests are present, including exhaustive five-step checks of the abstract shared-bus guard and PPU fetch-slot phase checks. The local suite and Pico SDK 2.3.1 firmware builds pass; invalid test GPIO maps are rejected before compilation. Both GitHub Actions workflows passed for commit `8f26041` on `work/rp2350-pio-bringup`.
 - Firmware CI checks PIO instruction order, sample strobe side-set, loop width, and agreement between the calculated 99 instruction clocks and C constants. It builds a second test map using Pico 2 header GPIOs GP20–GP22 and GP26–GP28, and rejects duplicate, malformed, out-of-range, leading-zero, and board-reserved GPIO assignments. These are source/configuration checks, not hardware execution.
 - A one-bit AHCT/LVC level-interface candidate schematic and a 35-case switch-level SPICE screen are now available under `hardware/`; the assumed cartridge release timing is not measured, so this is not electrical sign-off.
 - GPIO pin map, 5V interface, physical timing, accurate NES emulator, cartridge swapping and USB video protocol remain to be validated.

@@ -26,7 +26,7 @@ The objective is a **two-unit prototype** of a USB-connected Famicom cartridge d
 - [x] Reject duplicate, malformed, leading-zero, out-of-range, and Pico 2 board-reserved test GPIO assignments during CMake configuration; build a second header map using GP20–GP22/GP26–GP28 in firmware CI.
 - [x] Add a hardware-independent source check for PIO instruction order, sample strobe, and cycle-count agreement; run it in firmware CI.
 - [x] Build locally against Pico SDK 2.3.1 and verify the UF2 identifies as RP2350.
-- [x] Confirm the `pio-bringup` GitHub Actions job succeeds on the published feature branch (latest verified commit before this update: `c48e439`).
+- [x] Confirm both host-simulation and PIO-bringup GitHub Actions workflows succeed on the published feature branch at commit `8f26041`.
 - [x] Record standard Pico 2 as the target and identify its header GPIOs from Raspberry Pi's official board documentation; physical board presence and jumper wiring are not yet verified.
 - [ ] Verify sample strobes and loopback waveforms on the board with USB active.
 - [ ] Add a real 8-bit latch/transceiver transaction path and measure FIFO/DMA starvation.
