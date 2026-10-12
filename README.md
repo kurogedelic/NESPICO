@@ -38,7 +38,7 @@ The simulation is a *screening tool*, not proof that physical timing works. It d
 
 ### Current status
 
-- Host-side deterministic bus-timing simulator and 16 regression tests are committed. All 16 passed in a local Python run; GitHub Actions execution has not been verified.
+- Host-side deterministic bus-timing simulator and 21 regression tests are committed. All 21 passed in a local Python run; GitHub Actions execution has not been verified.
 - GPIO pin map, 5V interface, physical timing, accurate NES emulator, cartridge swapping and USB video protocol remain to be validated.
 - **No claim of working cartridge playback or real-device ROM dumping yet.**
 
@@ -59,6 +59,6 @@ python -m nespico.cli --sys-mhz 20 --settle-ns 160 --scanlines 1 # expected fail
 5. Real-cart CPU+PPU operation, host video/audio and input
 6. RAM-preserving RESET, cartridge replacement tests and MMC1/MMC3
 
-See [architecture notes](docs/architecture.md) and [simulation results](docs/benchmark-results.md).
+See [architecture notes](docs/architecture.md) and [simulation results](docs/benchmark-results.md). The extra pipeline tests model the CPU/PPU work required to prepare addresses; they show that nominal bus-only timing success is not sufficient.
 
 Reference documentation: [NESdev cartridge connector](https://www.nesdev.org/wiki/Cartridge_connector), [PPU rendering](https://www.nesdev.org/wiki/PPU_rendering), [MMC3](https://www.nesdev.org/wiki/MMC3), [RP2350](https://www.raspberrypi.com/documentation/microcontrollers/silicon.html).
