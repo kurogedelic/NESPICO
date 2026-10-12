@@ -1,0 +1,387 @@
+{
+  "model_type": "switch-level behavioral, not a vendor transistor-level model",
+  "cart_release_ns_sweep": [
+    0,
+    10,
+    20,
+    30,
+    50
+  ],
+  "guard_ns_sweep": [
+    0,
+    4,
+    8,
+    12,
+    20,
+    32,
+    40
+  ],
+  "ahct_enable_delay_ns": 13,
+  "lvc_disable_delay_ns": 8,
+  "ideal_switch_edge_margin_ns": 0.1,
+  "ahct244_recommended_per_output_current_mA": 25.0,
+  "no_overlap_current_detection_threshold_mA": 1.0,
+  "assumptions": {
+    "cart_driver_equivalent_ohms": 50,
+    "ahct_low_equivalent_ohms": 55,
+    "lvc_output_equivalent_ohms": 50,
+    "rp2350_output_equivalent_ohms_placeholder": 50,
+    "load_capacitance_each_node_pF": 50,
+    "cartridge_release_delay_is_assumed_not_specified": true
+  },
+  "cases": 35,
+  "max_cart_conflict_mA": 47.61951,
+  "max_mcu_conflict_mA": 32.940940000000005,
+  "rows": [
+    {
+      "cart_release_ns": 0,
+      "guard_ns": 0,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 0.03294094,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 0,
+      "guard_ns": 4,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 0.03154481,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 0,
+      "guard_ns": 8,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 0,
+      "guard_ns": 12,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 0,
+      "guard_ns": 20,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 0,
+      "guard_ns": 32,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.74995e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 0,
+      "guard_ns": 40,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.75083e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 10,
+      "guard_ns": 0,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 0.03294094,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 10,
+      "guard_ns": 4,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 0.03154481,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 10,
+      "guard_ns": 8,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 10,
+      "guard_ns": 12,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 10,
+      "guard_ns": 20,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 10,
+      "guard_ns": 32,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.74995e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 10,
+      "guard_ns": 40,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.750831e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 20,
+      "guard_ns": 0,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 0.04739289,
+      "mcu_conflict_peak_A": 0.03294094,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 20,
+      "guard_ns": 4,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 0.04280522,
+      "mcu_conflict_peak_A": 0.03154481,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 20,
+      "guard_ns": 8,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 20,
+      "guard_ns": 12,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 20,
+      "guard_ns": 20,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 20,
+      "guard_ns": 32,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.74995e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 20,
+      "guard_ns": 40,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.750831e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 30,
+      "guard_ns": 0,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 0.0476194,
+      "mcu_conflict_peak_A": 0.03294094,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 30,
+      "guard_ns": 4,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 0.0476172,
+      "mcu_conflict_peak_A": 0.03154481,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 30,
+      "guard_ns": 8,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 0.04757034,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 30,
+      "guard_ns": 12,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 0.04657499,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 30,
+      "guard_ns": 20,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.749899e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 30,
+      "guard_ns": 32,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.74995e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 30,
+      "guard_ns": 40,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.750831e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 50,
+      "guard_ns": 0,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 0.04761951,
+      "mcu_conflict_peak_A": 0.03294094,
+      "cart_write_low_V": 2.750063e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 50,
+      "guard_ns": 4,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 0.04761951,
+      "mcu_conflict_peak_A": 0.03154481,
+      "cart_write_low_V": 2.750063e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 50,
+      "guard_ns": 8,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 0.04761951,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.750063e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 50,
+      "guard_ns": 12,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 0.04761951,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.750063e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 50,
+      "guard_ns": 20,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 0.0476194,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.750063e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 50,
+      "guard_ns": 32,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 0.04657499,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.750066e-10,
+      "mcu_write_low_V": 1.649951e-10
+    },
+    {
+      "cart_release_ns": 50,
+      "guard_ns": 40,
+      "ahct_enable_delay_ns": 13,
+      "lvc_disable_delay_ns": 8,
+      "cart_conflict_peak_A": 4.999755e-06,
+      "mcu_conflict_peak_A": 3.299838e-06,
+      "cart_write_low_V": 2.750831e-10,
+      "mcu_write_low_V": 1.649951e-10
+    }
+  ]
+}

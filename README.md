@@ -38,7 +38,9 @@ The simulation is a *screening tool*, not proof that physical timing works. It d
 
 ### Current status
 
-- Host-side deterministic bus-timing simulator and 28 regression tests are present. The local suite and clean Pico SDK 2.3.1 firmware builds pass; invalid test GPIO maps are rejected before compilation. CI status for this feature branch has not been verified.
+- Host-side deterministic bus-timing simulator and 38 regression tests are present, including exhaustive five-step checks of the abstract shared-bus guard. The local suite and Pico SDK 2.3.1 firmware builds pass; invalid test GPIO maps are rejected before compilation. CI status for this feature branch has not been verified.
+- Firmware CI checks PIO instruction order, sample strobe side-set, loop width, and agreement between the calculated 99 instruction clocks and C constants. It also builds a valid GPIO24–29 boundary map and rejects duplicate, negative, out-of-range, nonnumeric, and leading-zero GPIO assignments. Canonical decimal input avoids C octal-literal ambiguity. These are source/configuration checks, not hardware execution.
+- A one-bit AHCT/LVC level-interface candidate schematic and a 35-case switch-level SPICE screen are now available under `hardware/`; the assumed cartridge release timing is not measured, so this is not electrical sign-off.
 - GPIO pin map, 5V interface, physical timing, accurate NES emulator, cartridge swapping and USB video protocol remain to be validated.
 - **No claim of working cartridge playback or real-device ROM dumping yet.**
 
@@ -48,6 +50,7 @@ The simulation is a *screening tool*, not proof that physical timing works. It d
 python -m unittest discover -s tests -v
 python -m nespico.cli --scanlines 262
 python -m nespico.cli --sys-mhz 20 --settle-ns 160 --scanlines 1 # expected failure
+python3 firmware/pio_bringup/validate_pio_source.py
 ```
 
 ## Development records
@@ -56,6 +59,8 @@ python -m nespico.cli --sys-mhz 20 --settle-ns 160 --scanlines 1 # expected fail
 - [Development roadmap](docs/roadmap.md)
 - [Simulation results](docs/benchmark-results.md)
 - [PIO bring-up checkpoint](docs/pio-bringup.md)
+- [Preliminary one-bit KiCad interface slice](hardware/kicad/README.md)
+- [Bus-turnaround SPICE screening model](hardware/spice/README.md)
 
 ## Milestones
 

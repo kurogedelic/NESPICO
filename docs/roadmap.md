@@ -22,7 +22,8 @@ The objective is a **two-unit prototype** of a USB-connected Famicom cartridge d
 - [x] Define a test-only dual-lane GPIO map and command/data format; do not treat it as the cartridge pin map.
 - [x] Add synchronized CPU/PPU-like state-machine streams and report instruction-cycle and FIFO stall status.
 - [x] Add a GitHub Actions firmware build workflow.
-- [x] Reject duplicate and out-of-range test-fixture GPIO assignments during CMake configuration; add negative cases to firmware CI.
+- [x] Reject duplicate, malformed, leading-zero, and out-of-range test-fixture GPIO assignments during CMake configuration; build the GPIO24–29 boundary map in firmware CI.
+- [x] Add a hardware-independent source check for PIO instruction order, sample strobe, and cycle-count agreement; run it in firmware CI.
 - [x] Build locally against Pico SDK 2.3.1 and verify the UF2 identifies as RP2350.
 - [ ] Confirm the new GitHub Actions firmware build on the feature branch.
 - [ ] Confirm exact board model and physically exposed test GPIOs.
@@ -38,6 +39,7 @@ The objective is a **two-unit prototype** of a USB-connected Famicom cartridge d
 - [ ] Finalize the **27 GPIO plus 74-series** map; check physically available pins on the Zero.
 - [ ] Choose precise latch/buffer/voltage-interface part numbers, validating 3.3 V output recognition at 5 V loads.
 - [ ] Verify bus isolation and safe default levels during reset, boot, and cartridge removal.
+- [x] Draft a one-bit SN74AHCT244/SN74LVC244A candidate slice and a 35-case switch-level OE-turnaround sweep; this does not select final parts or validate real cartridge timing.
 - [ ] Define CIRAM implementation (including whether separate SRAM is required), mapper IRQ and expansion-audio scope.
 - [ ] Produce reviewed schematics and a priced BOM for **two boards**.
 

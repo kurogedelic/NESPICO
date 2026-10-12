@@ -12,6 +12,9 @@ jobs:
       - name: Check out NESPICO
         uses: actions/checkout@v4
 
+      - name: Validate PIO source timing assumptions
+        run: python3 firmware/pio_bringup/validate_pio_source.py
+
       - name: Install ARM toolchain
         run: |
           sudo apt-get update
@@ -34,6 +37,19 @@ jobs:
       - name: Build UF2
         run: cmake --build build/pio-bringup --parallel
 
+      - name: Build valid GPIO boundary map
+        run: |
+          cmake -S firmware/pio_bringup -B build/pio-map-edge-valid -G Ninja \
+            -DPICO_BOARD=pico2 \
+            -DPICO_SDK_PATH=${{ github.workspace }}/pico-sdk \
+            -DNESPICO_PIN_A_OUT=24 \
+            -DNESPICO_PIN_A_IN=25 \
+            -DNESPICO_PIN_A_STROBE=26 \
+            -DNESPICO_PIN_B_OUT=27 \
+            -DNESPICO_PIN_B_IN=28 \
+            -DNESPICO_PIN_B_STROBE=29
+          cmake --build build/pio-map-edge-valid --parallel
+
       - name: Verify invalid loopback GPIO maps are rejected
         run: |
           if cmake -S firmware/pio_bringup -B build/bad-duplicate -G Ninja \
@@ -52,3 +68,32 @@ jobs:
             exit 1
           fi
           grep -q "outside the RP2350A GPIO range 0..29" build/bad-range.log
+
+      - name: Verify malformed GPIO maps are rejected
+        run: |
+          check_rejected() {
+            name="$1"
+            expected="$2"
+            shift 2
+            if cmake -S firmware/pio_bringup -B "build/$name" -G Ninja \
+              -DPICO_BOARD=pico2 \
+              -DPICO_SDK_PATH=${{ github.workspace }}/pico-sdk \
+              "$@" > "build/$name.log" 2>&1; then
+              echo "Expected $name GPIO configuration to fail"
+              exit 1
+            fi
+            grep -Fq "$expected" "build/$name.log" || {
+              cat "build/$name.log"
+              exit 1
+            }
+          }
+          check_rejected bad-negative "must be an integer GPIO number" \
+            -DNESPICO_PIN_A_OUT=-1
+          check_rejected bad-nonnumeric "must be an integer GPIO number" \
+            -DNESPICO_PIN_A_OUT=oops
+          check_rejected bad-leading-zero-octal "must not use leading zeros" \
+            -DNESPICO_PIN_A_OUT=010
+          check_rejected bad-leading-zero-invalid-octal "must not use leading zeros" \
+            -DNESPICO_PIN_A_OUT=08
+          check_rejected bad-cross-lane-duplicate "duplicate GPIO assignment" \
+            -DNESPICO_PIN_B_OUT=2

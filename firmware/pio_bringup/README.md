@@ -36,6 +36,12 @@ before flashing it. The firmware can also be configured with different GPIOs, e.
 Invalid values can be checked without hardware: configure once with a duplicate
 such as `-DNESPICO_PIN_A_IN=2`, and once with an out-of-range value such as
 `-DNESPICO_PIN_A_OUT=30`; both configurations must fail before compilation.
+The source-level PIO instruction and cycle-count consistency check is also
+hardware-independent:
+
+```sh
+python3 firmware/pio_bringup/validate_pio_source.py
+```
 
 ## Test behavior
 
@@ -46,6 +52,9 @@ such as `-DNESPICO_PIN_A_IN=2`, and once with an out-of-range value such as
 - Nominal PIO path: 1 `pull` + 1 `set` + 32 × (`out` + `in` + `jmp`) + 1 `push`
   = **99 instruction clocks per 32-bit word**, excluding FIFO stalls and GPIO
   propagation. This is a test-pattern count, not a cartridge transaction time.
+- `validate_pio_source.py` checks the source instruction order, sample strobe
+  side-set, loop width, and matching C constants. It is a consistency check, not
+  a PIO emulator or a substitute for loopback measurements.
 - A pass requires exact data matches and no sticky TXSTALL/RXSTALL flags. The
   report includes elapsed MCU time, `clk_sys`, USB connection state and mismatch
   count. USB progress messages are emitted only when the USB CDC host is present.

@@ -1,4 +1,5 @@
 """Software-only invariants for the abstract shared data-bus owner guard."""
+from itertools import product
 import unittest
 
 from nespico.bus_safety import (
@@ -78,6 +79,32 @@ class BusSafetyTests(unittest.TestCase):
     def test_invalid_owner_is_rejected(self):
         with self.assertRaises(TypeError):
             BreakBeforeMake().advance("cartridge")
+
+    def test_all_five_step_sequences_preserve_owner_and_guard_invariants(self):
+        requests = (BusOwner.CONSOLE, BusOwner.CARTRIDGE, BusOwner.DISABLED, None)
+        actions = tuple(product(requests, (False, True)))
+        active = (BusOwner.CONSOLE, BusOwner.CARTRIDGE)
+
+        # 8 possible request/inhibit combinations at each step: exhaustively
+        # check every five-step history, not only hand-picked examples.
+        for sequence in product(actions, repeat=5):
+            sequencer = BreakBeforeMake()
+            previous_owner = BusOwner.DISABLED
+            for requested, inhibited in sequence:
+                state = sequencer.advance(requested, inhibited=inhibited)
+                self.assert_exclusive(state)
+                self.assertEqual(state.console_oe, state.owner is BusOwner.CONSOLE)
+                self.assertEqual(state.cartridge_oe, state.owner is BusOwner.CARTRIDGE)
+
+                if inhibited or requested in (None, BusOwner.DISABLED):
+                    self.assertIs(state.owner, BusOwner.DISABLED)
+                    self.assertFalse(state.guard_pending)
+                elif state.owner is BusOwner.DISABLED:
+                    self.assertTrue(state.guard_pending)
+
+                if previous_owner in active and requested in active and requested is not previous_owner and not inhibited:
+                    self.assertIs(state.owner, BusOwner.DISABLED)
+                previous_owner = state.owner
 
 
 if __name__ == "__main__":
