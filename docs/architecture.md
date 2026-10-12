@@ -11,7 +11,8 @@ YD-RP2350A Zero + inexpensive 74-series logic + physical 60-pin Famicom cartridg
 - GPIO or PIO control of CPU M2, R/W, /ROMSEL and PPU /RD, /WR.
 - Cartridge IRQ, CIRAM control and mapper writes must be supported.
 - Verify **every** signal with NESdev cartridge connector pinout before PCB design. The current 27-GPIO idea is **not a validated pin map**.
-- 5V tolerant RP2350 input does not guarantee 5V-compatible output, direction safety or live insertion survival. Include OE defaults, transceiver voltage compatibility, ESD, rail sequencing and safe RESET handling in hardware revision.
+- The [RP2350 datasheet](https://pip.raspberrypi.com/documents/RP-008373-DS-rp2350-datasheet.pdf) distinguishes standard and FT pads: at IOVDD=3.3 V, FT input tolerance up to 5.5 V is conditional on IOVDD being present and does not establish output compatibility, powered-off safety, or hot-insertion survival. The exact module's pad classes and routing remain unverified. Include OE defaults, transceiver voltage compatibility, ESD, rail sequencing and safe RESET handling in hardware revision.
+- A source-checked but explicitly non-final connector inventory is in [the Famicom 60-pin signal register](famicom-60pin-signal-register.md); it leaves GPIO assignment and electrical design open.
 
 ## Model's timing assumptions
 
