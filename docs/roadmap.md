@@ -9,7 +9,7 @@ The objective is a **two-unit prototype** of a USB-connected Famicom cartridge d
 - [x] Model CPU/PPU work required to prepare bus requests.
 - [x] Add basic RESET RAM retention and partial MMC3 A12 tests.
 - [x] Commit 21 Python regression tests and a GitHub Actions workflow.
-- [ ] Verify green GitHub Actions results on the main branch.
+- [x] Verify green GitHub Actions results on the main branch.
 - [ ] Replace synthetic bus events with vetted 6502 instruction and PPU fetch traces.
 - [ ] Model actual M2 phases, latch writes, /OE, IRQ, CIRAM, read/write turnarounds and bus contention.
 
@@ -17,12 +17,16 @@ The objective is a **two-unit prototype** of a USB-connected Famicom cartridge d
 
 ## Stage 1 — Real PIO proof on the existing RP2350A Zero
 
-- [ ] Add Pico SDK target and **real PIO assembly**, not merely synthetic host-side cycle counts.
-- [ ] Design an explicit PIO pin map and bus command format for address latch, data direction, strobes and captures.
-- [ ] Verify PIO instruction timing and state machine synchronization.
-- [ ] Send simultaneous CPU/PPU-like streams, feed FIFOs via DMA/CPU and detect underflow/overrun.
-- [ ] Stress-test with USB active and report worst-case latency rather than averages.
-- [ ] Measure waveforms via loopback and preferably an external logic analyzer.
+- [x] Add a Pico SDK 2.3.1 build target and a first real PIO assembly loopback sequencer.
+- [x] Define a test-only dual-lane GPIO map and command/data format; do not treat it as the cartridge pin map.
+- [x] Add synchronized CPU/PPU-like state-machine streams and report instruction-cycle and FIFO stall status.
+- [x] Add a GitHub Actions firmware build workflow.
+- [x] Build locally against Pico SDK 2.3.1 and verify the UF2 identifies as RP2350.
+- [ ] Confirm the new GitHub Actions firmware build on the feature branch.
+- [ ] Confirm exact board model and physically exposed test GPIOs.
+- [ ] Verify sample strobes and loopback waveforms on the board with USB active.
+- [ ] Add a real 8-bit latch/transceiver transaction path and measure FIFO/DMA starvation.
+- [ ] Measure worst-case producer timing for simultaneous CPU/PPU requests.
 
 **Pass condition:** observed bus operations meet timing deadlines under representative sustained load, with no missed requests or FIFO starvation. Report clocks, stalls and limitations.
 
@@ -73,6 +77,6 @@ The objective is a **two-unit prototype** of a USB-connected Famicom cartridge d
 
 ## Next action
 
-**Write and build the first PIO sequencer for RP2350A Zero.** Measure transaction-cycle count, IRQ/FIFO stall risk, simultaneous CPU/PPU scheduling and USB interaction. Those numbers determine whether the current architecture should proceed to a PCB.
+**Build and flash the test-only dual-lane PIO loopback firmware on the exact RP2350A Zero.** Verify the two GPIO jumpers and synchronized strobes with a logic analyzer while USB is active. Then replace the serial test lane with an 8-bit latch/transceiver transaction engine and measure deadlines before freezing any cartridge-bus pin map or ordering PCBs.
 
-Related: [development log](journal/2026-10-12.md) · [architecture](architecture.md) · [simulation results](benchmark-results.md).
+Related: [development log](journal/2026-10-12.md) · [architecture](architecture.md) · [simulation results](benchmark-results.md) · [PIO bring-up checkpoint](pio-bringup.md).

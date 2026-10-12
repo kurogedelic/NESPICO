@@ -55,6 +55,7 @@ python -m nespico.cli --sys-mhz 20 --settle-ns 160 --scanlines 1 # expected fail
 - [Development log (2026-10-12)](docs/journal/2026-10-12.md)
 - [Development roadmap](docs/roadmap.md)
 - [Simulation results](docs/benchmark-results.md)
+- [PIO bring-up checkpoint](docs/pio-bringup.md)
 
 ## Milestones
 
@@ -66,5 +67,7 @@ python -m nespico.cli --sys-mhz 20 --settle-ns 160 --scanlines 1 # expected fail
 6. RAM-preserving RESET, cartridge replacement tests and MMC1/MMC3
 
 See [architecture notes](docs/architecture.md) and [simulation results](docs/benchmark-results.md). The extra pipeline tests model the CPU/PPU work required to prepare addresses; they show that nominal bus-only timing success is not sufficient.
+
+The first Pico SDK / PIO firmware target is a **test-only dual-lane GPIO loopback** under `firmware/pio_bringup/`. It is intentionally not a cartridge bus driver; see its [build and safety instructions](firmware/pio_bringup/README.md). A board-specific pinout and real logic-analyzer measurements are still required before cartridge-interface or PCB work.
 
 Reference documentation: [NESdev cartridge connector](https://www.nesdev.org/wiki/Cartridge_connector), [PPU rendering](https://www.nesdev.org/wiki/PPU_rendering), [MMC3](https://www.nesdev.org/wiki/MMC3), [RP2350](https://www.raspberrypi.com/documentation/microcontrollers/silicon.html).
