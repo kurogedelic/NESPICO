@@ -1,6 +1,6 @@
 # Host-side simulation results
 
-Tested the deterministic Python scheduler locally (16/16 unit tests pass). GitHub Actions status has not been independently verified.
+Tested the deterministic Python scheduler locally (21/21 unit tests pass). GitHub Actions status has not been independently verified.
 
 **These are model outcomes, not measured YD-RP2350A / PIO performance.** The model assumes transactions (including addresses and data) are ready and PIO/FIFO/DMA scheduling has no additional stalls.
 
@@ -36,3 +36,22 @@ Under the modeled workload, CPU and PPU service windows **overlap 13,496 times**
 ## Next test
 
 Build and compile a PIO transaction sequencer, count its instruction cycles and measure real output/input timings on the RP2350A Zero with loopback before designing the cartridge PCB. Replace nominal workloads with recorded/verified 6502/PPU bus traces.
+
+## Follow-up: request preparation cost
+
+Added `nespico/pipeline.py` and `tests/test_pipeline.py`. This is a deliberately **conservative model with no lookahead**: the CPU/PPU must prepare an address before its PIO bus transaction. It still assumes zero DMA/FIFO setup overhead.
+
+At 150 MHz, with the same **assumed** 12 bus clocks + 22 ns settling, 320 ns CPU and 180 ns PPU deadlines:
+
+| CPU preparation | PPU preparation | CPU misses/frame | PPU misses/frame |
+|---:|---:|---:|---:|
+| 0 cycles | 0 cycles | 0 | 0 |
+| 10 cycles | 10 cycles | 0 | 0 |
+| 30 cycles | 10 cycles | 0 | 0 |
+| 40 cycles | 10 cycles | 29,781 | 0 |
+| 10 cycles | 12 cycles | 0 | 40,488 |
+| 10 cycles | 16 cycles | 0 | 40,488 |
+
+One full NTSC-like simulated frame contains 29,781 CPU and 40,488 PPU requests. **These numbers are NOT measured MCU performance.** Computation may be pipelined earlier, but real instruction emulation, PPU address generation, DMA FIFO delivery, USB interrupts and jitter may cost considerably more. This shows why merely getting zero deadline misses in the original bus-only timing model does not justify fabricating a PCB.
+
+**Go/no-go:** Continue host software and Zero-board PIO timing development. Do not freeze a 27-GPIO schematic or order the two cartridge PCBs until (1) an actual PIO instruction sequence exists, (2) per-access producer budgets are measured or bounded on RP2350, and (3) the CPU/PPU bus and 5V electrical interface are reviewed.
