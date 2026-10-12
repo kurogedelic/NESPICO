@@ -36,6 +36,12 @@ python -m nespico.cli --pio-cycles 48 --shared-bus --scanlines 2
 
 The last command is an intentionally overloaded shared-engine configuration and should exit nonzero.
 
+## Abstract data-bus ownership guard
+
+`nespico/bus_safety.py` models only exclusive ownership of a shared CPU or PPU data bus: a console read requests the cartridge as driver, and a console write requests the console. Its `BreakBeforeMake` state machine keeps both logical output enables disabled for at least one complete sequencer step before first enabling a driver or changing direction. `IDLE` and an explicit inhibit (for example, a reset condition in a future caller) disable both outputs immediately and cancel a pending grant.
+
+This is a host-side invariant model, **not** a PIO implementation or an electrical safety guarantee. A sequencer step has no assigned duration or relation to M2, `/RD`, `/WR`, address latches, or transceiver propagation. The model does not validate power-up pin levels, the cartridge connector, real bus contention, or the exact YD-RP2350A Zero GPIO map. Those remain hardware-review and measurement gates.
+
 ## Further simulation before PCB
 
 1. Replace synthetic address streams with a cycle-accurate 6502 execution trace and known PPUs' fetch traces. Verify against NESdev test ROMs.

@@ -12,6 +12,7 @@ The objective is a **two-unit prototype** of a USB-connected Famicom cartridge d
 - [x] Verify green GitHub Actions results on the main branch.
 - [ ] Replace synthetic bus events with vetted 6502 instruction and PPU fetch traces.
 - [ ] Model actual M2 phases, latch writes, /OE, IRQ, CIRAM, read/write turnarounds and bus contention.
+  - [x] Add a host-only abstract data-bus owner guard with a tested disabled step on driver handoff; this does not model real strobes, timing, or electrical behavior.
 
 **Pass condition:** reproducible CI and timing simulations with assumptions explicitly labeled. Host simulation cannot prove hardware performance.
 
