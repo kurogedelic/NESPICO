@@ -1,0 +1,26 @@
+name: Host simulation
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  simulate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Nominal 262-scanline model
+        run: python -m nespico.cli --scanlines 262
+      - name: Deliberately slow model must fail
+        run: |
+          if python -m nespico.cli --scanlines 1 --sys-mhz 20 --settle-ns 160; then
+            echo 'Unexpected passing result for overloaded bus' >&2
+            exit 1
+          fi
