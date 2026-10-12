@@ -1,6 +1,6 @@
 # Pico 2 board plan and external-logic options
 
-**Status:** design proposal only. This document is not a frozen GPIO map, reviewed schematic, BOM, layout, or fabrication release.
+**Status:** the full 60-pin interface remains a design proposal, not a frozen GPIO map or fabrication release. A separate 8-bit Pico 2 bench fixture is now drafted under [`bringup/`](bringup/README.md); that fixture is not the complete interface and is not cleared for fabrication.
 
 ## Confirmed project constraints
 
@@ -51,7 +51,11 @@ This saves GPIOs but serializes transactions that the project currently models a
 
 Keep the CPU and PPU data paths independent in the first candidate, and evaluate local decoding of mutually exclusive control strobes plus parallel address-holding latches as the GPIO-reduction mechanism. First add the actual 27-function signal list and a proposed 23-pin map; then implement an 8-bit latch/transceiver PIO test and capture logic-analyzer traces. If the test cannot meet worst-case CPU/PPU deadlines, revise the architecture before making a full cartridge PCB.
 
-A separate first bring-up PCB may be useful for the Pico 2, one 8-bit latch/transceiver path, test points, and ADC-only GP26–GP28 access. It must be labelled as a test fixture and must not imply that the complete 60-pin cartridge interface is ready.
+A separate first bring-up PCB can validate independent 8-bit CPU/PPU buffer paths and ADC-only GP26–GP28 access. A two-lane buffer test fixture now exists in `bringup/`; it is explicitly bench-only and must not imply that the complete 60-pin cartridge interface is ready.
+
+### Bring-up fixture Pico 2 pin-number check
+
+With the Pico USB connector at the top, the J1 left socket row follows physical pins 1–20 from top to bottom, while J2's right socket row follows physical pins 40–21 from top to bottom. Therefore J2.7/8/9/10 map to physical pins 34/33/32/31: GP28/AGND/GP27/GP26. J5 is ordered ADC2/AGND/ADC1/ADC0. GP26–GP28 are analog-only; GP29/ADC3 remains internal for VSYS measurement and is not routed. The repeatable check is `bringup/validate_bringup.py`; device references are in `bringup/references.md`.
 
 ## Freeze gates before a full PCB layout
 

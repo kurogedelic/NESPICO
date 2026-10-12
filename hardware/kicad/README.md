@@ -28,6 +28,19 @@ kicad-cli sch export pdf hardware/kicad/NESPICO_Interface.kicad_sch -o hardware/
 
 The generation script expects a KiCad installation whose standard symbol files live under `/usr/share/kicad/symbols`; the checked-in schematic and local library are ordinary KiCad files and remain available independently of rerunning the generator.
 
+## Separate 8-bit Pico 2 bring-up fixture
+
+The separate [`bringup/`](bringup/README.md) project is an editable two-layer test fixture for independent CPU-TX and PPU-RX byte lanes. It reserves GP26–GP28 for ADC0–ADC2, leaves GP29 internal, and marks the 5 V-side headers as test-only. Its ADC breakout is J5: `ADC2`, `AGND`, `ADC1`, `ADC0`, with a 0–3.3 V input limit. It is not the 60-pin cartridge interface and is not a fabrication release.
+
+From the repository root, regenerate and validate it with:
+
+```sh
+/usr/bin/python3 hardware/kicad/bringup/generate_bringup.py
+/usr/bin/python3 hardware/kicad/bringup/validate_bringup.py
+```
+
+The `bringup/README.md` records the verified Pico 2 physical numbering, candidate parts, provisional Gerber/Excellon outputs, and remaining electrical/mechanical review gates.
+
 ## Deliberate omissions / blockers before a board design
 
 - No Pico 2 GPIO pin selection, board footprint, or routing is assigned. Its 26 header GPIOs are documented, but the project-level allocation remains open; no MCU pin should be assumed from this one-bit functional slice.
