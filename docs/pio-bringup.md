@@ -43,3 +43,28 @@ the source assembles and links for the Pico 2 / RP2350A SDK target.
 
 No real hardware is attached to this computer, so steps 2–4 cannot be reported as
 measured here. No PCB has been ordered or represented as electrically validated.
+
+## Software-only verification and board-documentation check — 2026-10-12
+
+- Re-ran all **28/28** host regression tests successfully.
+- Performed a clean Pico SDK 2.3.1 configure/build for the default test GPIO map
+  and a second, non-overlapping test map (GPIO 9–14); both produced a UF2.
+- Confirmed that CMake rejects both a duplicate GPIO assignment and GPIO 30
+  before compilation. Equivalent negative cases are now in the firmware workflow;
+  the feature-branch GitHub Actions result is still unverified.
+- Added a configure-time range check (0–29) and uniqueness check for the six
+  loopback signals. These checks validate only the numeric silicon GPIO domain,
+  not which pads a carrier module exposes or whether any electrical connection
+  is safe.
+- Public product documentation did **not** establish that the recorded
+  `YD-RP2350A Zero` is the same hardware as Waveshare's `RP2350-Zero`. The
+  [Waveshare wiki](https://www.waveshare.com/wiki/RP2350-Zero) describes an
+  RP2350A module with 29 GPIOs (20 on headers, the rest solder-only), but its
+  feature text says 4 MB flash while the linked
+  [official schematic](https://files.waveshare.com/wiki/RP2350-Zero/RP2350_Zero.pdf)
+  shows a W25Q16 device (16 Mbit / 2 MB). A separate
+  [RP2350-Zero-CM guide](https://spotpear.com/wiki/Raspberry-Pi-Pico-2-RP2350-Zero-CM-Mini.html)
+  documents another product variant. Do not infer the target board's pin exposure,
+  flash size, layout, or onboard GPIO sharing from these similar names.
+- No board-specific GPIO map was frozen; no firmware was flashed and no physical
+  signal or electrical behavior was measured.

@@ -19,6 +19,33 @@ set(NESPICO_PIN_B_OUT 6 CACHE STRING "GPIO for loopback lane B output")
 set(NESPICO_PIN_B_IN 7 CACHE STRING "GPIO for loopback lane B input")
 set(NESPICO_PIN_B_STROBE 8 CACHE STRING "GPIO for loopback lane B sample strobe")
 
+# Catch test-fixture mistakes early. This is a silicon GPIO-number check only;
+# it does not prove that a particular RP2350A Zero module exposes the selected
+# pad or that the pad is electrically safe for any external connection.
+set(_nespico_pin_names
+    NESPICO_PIN_A_OUT
+    NESPICO_PIN_A_IN
+    NESPICO_PIN_A_STROBE
+    NESPICO_PIN_B_OUT
+    NESPICO_PIN_B_IN
+    NESPICO_PIN_B_STROBE
+)
+set(_nespico_assigned_pins)
+foreach(_pin_name IN LISTS _nespico_pin_names)
+    set(_pin_value "${${_pin_name}}")
+    if(NOT "${_pin_value}" MATCHES "^[0-9]+$")
+        message(FATAL_ERROR "${_pin_name} must be an integer GPIO number; got '${_pin_value}'.")
+    endif()
+    if(_pin_value LESS 0 OR _pin_value GREATER 29)
+        message(FATAL_ERROR "${_pin_name}=${_pin_value} is outside the RP2350A GPIO range 0..29.")
+    endif()
+    list(FIND _nespico_assigned_pins "${_pin_value}" _duplicate_index)
+    if(NOT _duplicate_index EQUAL -1)
+        message(FATAL_ERROR "duplicate GPIO assignment: ${_pin_name} uses GPIO${_pin_value} already assigned to another loopback signal.")
+    endif()
+    list(APPEND _nespico_assigned_pins "${_pin_value}")
+endforeach()
+
 add_executable(nespico_pio_bringup
     main.c
 )

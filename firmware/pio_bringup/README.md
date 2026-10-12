@@ -13,6 +13,9 @@ PIO instruction-count and FIFO-stall status while USB CDC may be active.
   `GPIO6 -> GPIO7`; the strobe outputs are GPIO4 and GPIO8.
 - Check the exact module pinout first. Override the six GPIO values at CMake
   configure time if those pins are unavailable or conflict with board circuitry.
+- CMake rejects GPIO numbers outside 0..29 and duplicate assignments among the
+  six test signals. This is only a configuration sanity check: it cannot confirm
+  module exposure, onboard sharing, voltage safety, or cartridge compatibility.
 - The loopback input pins have internal pull-downs. The outputs start low.
 
 ## Build
@@ -30,6 +33,9 @@ The output includes `nespico_pio_bringup.uf2`. `pico2` selects the RP2350A
 SDK target for compile validation; confirm the custom board's flash/boot details
 before flashing it. The firmware can also be configured with different GPIOs, e.g.
 `-DNESPICO_PIN_A_OUT=...` and corresponding input/strobe/lane-B definitions.
+Invalid values can be checked without hardware: configure once with a duplicate
+such as `-DNESPICO_PIN_A_IN=2`, and once with an out-of-range value such as
+`-DNESPICO_PIN_A_OUT=30`; both configurations must fail before compilation.
 
 ## Test behavior
 

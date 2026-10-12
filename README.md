@@ -38,7 +38,7 @@ The simulation is a *screening tool*, not proof that physical timing works. It d
 
 ### Current status
 
-- Host-side deterministic bus-timing simulator and 21 regression tests are committed. All 21 passed in a local Python run; GitHub Actions execution has not been verified.
+- Host-side deterministic bus-timing simulator and 28 regression tests are present. The local suite and clean Pico SDK 2.3.1 firmware builds pass; invalid test GPIO maps are rejected before compilation. CI status for this feature branch has not been verified.
 - GPIO pin map, 5V interface, physical timing, accurate NES emulator, cartridge swapping and USB video protocol remain to be validated.
 - **No claim of working cartridge playback or real-device ROM dumping yet.**
 

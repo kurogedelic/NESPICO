@@ -22,6 +22,7 @@ The objective is a **two-unit prototype** of a USB-connected Famicom cartridge d
 - [x] Define a test-only dual-lane GPIO map and command/data format; do not treat it as the cartridge pin map.
 - [x] Add synchronized CPU/PPU-like state-machine streams and report instruction-cycle and FIFO stall status.
 - [x] Add a GitHub Actions firmware build workflow.
+- [x] Reject duplicate and out-of-range test-fixture GPIO assignments during CMake configuration; add negative cases to firmware CI.
 - [x] Build locally against Pico SDK 2.3.1 and verify the UF2 identifies as RP2350.
 - [ ] Confirm the new GitHub Actions firmware build on the feature branch.
 - [ ] Confirm exact board model and physically exposed test GPIOs.
