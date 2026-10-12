@@ -1,0 +1,6 @@
+# Generated firmware/build outputs
+/build/
+
+# Python cache artifacts
+__pycache__/
+*.py[cod]

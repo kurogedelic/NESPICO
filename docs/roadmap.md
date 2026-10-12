@@ -1,6 +1,6 @@
 # Roadmap
 
-The objective is a **two-unit prototype** of a USB-connected Famicom cartridge dumper and real-cartridge NES console. Start with YD-RP2350A Zero + 74-series logic, no FPGA, no HDMI or Wi-Fi. The computer displays video/audio and forwards controls, while the RP2350 executes the emulator and talks to actual cartridge PRG/CHR buses.
+The objective is a **two-unit prototype** of a USB-connected Famicom cartridge dumper and real-cartridge NES console. Start with a standard non-wireless Raspberry Pi Pico 2 + 74-series logic, no FPGA, no HDMI or Wi-Fi. By user direction, reserve GP26–GP28 (ADC0–ADC2) for analog inputs; GP29/ADC3 is Pico 2's internal VSYS/3 monitor and is not a header GPIO. This leaves 23 digital header GPIOs GP0–GP22, so the earlier 27-GPIO concept must move at least four functions into external logic or be revised before pin mapping. The computer displays video/audio and forwards controls, while the RP2350 executes the emulator and talks to actual cartridge PRG/CHR buses.
 
 ## Stage 0 — Host-side verification (in progress)
 
@@ -9,29 +9,40 @@ The objective is a **two-unit prototype** of a USB-connected Famicom cartridge d
 - [x] Model CPU/PPU work required to prepare bus requests.
 - [x] Add basic RESET RAM retention and partial MMC3 A12 tests.
 - [x] Commit 21 Python regression tests and a GitHub Actions workflow.
-- [ ] Verify green GitHub Actions results on the main branch.
+- [x] Verify green GitHub Actions results on the main branch.
+- [x] Add NESdev-timed 170-slot PPU fetch phases per rendering scanline; addresses and CPU instruction traces remain synthetic/unknown.
 - [ ] Replace synthetic bus events with vetted 6502 instruction and PPU fetch traces.
 - [ ] Model actual M2 phases, latch writes, /OE, IRQ, CIRAM, read/write turnarounds and bus contention.
+  - [x] Add a host-only abstract data-bus owner guard with a tested disabled step on driver handoff; this does not model real strobes, timing, or electrical behavior.
 
 **Pass condition:** reproducible CI and timing simulations with assumptions explicitly labeled. Host simulation cannot prove hardware performance.
 
-## Stage 1 — Real PIO proof on the existing RP2350A Zero
+## Stage 1 — Real PIO proof on Raspberry Pi Pico 2
 
-- [ ] Add Pico SDK target and **real PIO assembly**, not merely synthetic host-side cycle counts.
-- [ ] Design an explicit PIO pin map and bus command format for address latch, data direction, strobes and captures.
-- [ ] Verify PIO instruction timing and state machine synchronization.
-- [ ] Send simultaneous CPU/PPU-like streams, feed FIFOs via DMA/CPU and detect underflow/overrun.
-- [ ] Stress-test with USB active and report worst-case latency rather than averages.
-- [ ] Measure waveforms via loopback and preferably an external logic analyzer.
+- [x] Add a Pico SDK 2.3.1 build target and a first real PIO assembly loopback sequencer.
+- [x] Define a test-only dual-lane GPIO map and command/data format; do not treat it as the cartridge pin map.
+- [x] Add synchronized CPU/PPU-like state-machine streams and report instruction-cycle and FIFO stall status.
+- [x] Add a GitHub Actions firmware build workflow.
+- [x] Reject duplicate, malformed, leading-zero, out-of-range, and Pico 2 board-reserved test GPIO assignments during CMake configuration; build a second header map using GP20–GP22/GP26–GP28 in firmware CI.
+- [x] Add a hardware-independent source check for PIO instruction order, sample strobe, and cycle-count agreement; run it in firmware CI.
+- [x] Build locally against Pico SDK 2.3.1 and verify the UF2 identifies as RP2350.
+- [x] Confirm both host-simulation and PIO-bringup GitHub Actions workflows succeed on the published feature branch at commit `8f26041`.
+- [x] Record standard Pico 2 as the target and identify its header GPIOs from Raspberry Pi's official board documentation; physical board presence and jumper wiring are not yet verified.
+- [ ] Verify sample strobes and loopback waveforms on the board with USB active.
+- [ ] Add a real 8-bit latch/transceiver transaction path and measure FIFO/DMA starvation.
+- [ ] Measure worst-case producer timing for simultaneous CPU/PPU requests.
 
 **Pass condition:** observed bus operations meet timing deadlines under representative sustained load, with no missed requests or FIFO starvation. Report clocks, stalls and limitations.
 
 ## Stage 2 — Complete electrical interface before PCB
 
 - [ ] Enumerate each 60-pin cartridge signal, direction, voltage, required timing and ownership.
-- [ ] Finalize the **27 GPIO plus 74-series** map; check physically available pins on the Zero.
+- [x] Reserve GP26–GP28 for ADC0–ADC2; keep GP29/ADC3 reserved for the Pico 2's VSYS/3 monitor.
+- [ ] Reconcile the **27-GPIO concept** with the 23 digital GPIOs available under this ADC reservation; assign a smaller GPIO map plus external logic, or revise the architecture.
+- [ ] Review external-logic options in [`hardware/kicad/board-plan.md`](../hardware/kicad/board-plan.md) against a complete named signal list and real PIO timing.
 - [ ] Choose precise latch/buffer/voltage-interface part numbers, validating 3.3 V output recognition at 5 V loads.
 - [ ] Verify bus isolation and safe default levels during reset, boot, and cartridge removal.
+- [x] Draft a one-bit SN74AHCT244/SN74LVC244A candidate slice and a 35-case switch-level OE-turnaround sweep; this does not select final parts or validate real cartridge timing.
 - [ ] Define CIRAM implementation (including whether separate SRAM is required), mapper IRQ and expansion-audio scope.
 - [ ] Produce reviewed schematics and a priced BOM for **two boards**.
 
@@ -67,12 +78,12 @@ The objective is a **two-unit prototype** of a USB-connected Famicom cartridge d
 ## Stop / pivot rules
 
 - If CPU + PPU + PIO + USB cannot meet measured real-time deadlines, stop before PCB fabrication and reassess pipelining or MCU architecture.
-- If the 27-pin design is too fragile, consider a GPIO-richer RP2350B module rather than endlessly adding glue logic.
+- If the required signals cannot fit within the 23 digital GPIOs available under the ADC reservation plus a reviewed external-logic design, compare a GPIO-richer RP2350B board before PCB release.
 - If real-time USB video is too costly, test palette/delta/PPU-command protocols and move reconstruction to the host.
 - If full live-cart playback stalls, finish a modest and reliable **ROM dumper** instead of expanding scope.
 
 ## Next action
 
-**Write and build the first PIO sequencer for RP2350A Zero.** Measure transaction-cycle count, IRQ/FIFO stall risk, simultaneous CPU/PPU scheduling and USB interaction. Those numbers determine whether the current architecture should proceed to a PCB.
+**Build and flash the test-only dual-lane PIO loopback firmware on the standard Pico 2.** Verify the two 3.3 V GPIO jumpers and synchronized strobes with a logic analyzer while USB is active. Then replace the serial test lane with an 8-bit latch/transceiver transaction engine and measure deadlines before freezing any cartridge-bus pin map or ordering PCBs.
 
-Related: [development log](journal/2026-10-12.md) · [architecture](architecture.md) · [simulation results](benchmark-results.md).
+Related: [development log](journal/2026-10-12.md) · [architecture](architecture.md) · [simulation results](benchmark-results.md) · [PIO bring-up checkpoint](pio-bringup.md).

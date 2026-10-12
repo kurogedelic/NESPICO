@@ -1,0 +1,8 @@
+Reference,Qty,Candidate value / part,Footprint,Manufacturer / MPN,Notes
+U1,1,SN74AHCT245DW,SOIC-20W 7.5x12.8 mm P1.27,Texas Instruments / SN74AHCT245DW,Fixed A-to-B 5 V transmit test path; verify exact package and datasheet
+U2,1,SN74LVC245ADW,SOIC-20W 7.5x12.8 mm P1.27,Texas Instruments / SN74LVC245ADW,Fixed B-to-A 3.3 V receive path; verify 5 V input conditions
+R1 R2,2,10 kOhm 1 percent 0805,0805 metric,Generic / not selected,OE_N pull-ups; placeholder value
+C1 C2,2,100 nF X7R 25 V 0805,0805 metric,Generic / not selected,Local bypass placeholders; confirm final value/placement
+J1 J2,2,1x20 female socket strip 2.54 mm,PinSocket_1x20_P2.54mm_Vertical,Generic / not selected,Check stack height and Pico 2 fit
+J3 J4,2,1x10 male pin header 2.54 mm,PinHeader_1x10_P2.54mm_Vertical,Generic / not selected,Test-only headers; not cartridge connectors
+J5,1,1x4 male pin header 2.54 mm,PinHeader_1x04_P2.54mm_Vertical,Generic / not selected,ADC2 AGND ADC1 ADC0; 0-3.3 V maximum

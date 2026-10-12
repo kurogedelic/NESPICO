@@ -14,7 +14,8 @@ class BusEvent:
     time_ns: float
     bus: str
     deadline_ns: float
-    address: int
+    address: int | None
+    kind: str = "unspecified"
 
 
 @dataclass(frozen=True)
@@ -43,10 +44,13 @@ class SimResult:
 
 
 def make_events(scanlines: int = SCANLINES, config: TimingConfig | None = None) -> list[BusEvent]:
-    """Representative NTSC CPU cycles and PPU fetches, not a full NES bus trace.
+    """Build timing slots, not a complete or address-accurate NES bus trace.
 
-    PPU memory fetches approximated every two dots during rendering,
-    including nametable, attribute, background pattern and sprite intervals.
+    CPU events represent one slot per approximate CPU cycle, with the address
+    left unknown. PPU events follow the documented 2-dot fetch phases during
+    visible and pre-render scanlines, assuming rendering is enabled and all
+    eight sprite slots are present. PPU addresses and rendering-dependent
+    behavior are not modeled.
     """
     if not 1 <= scanlines <= SCANLINES:
         raise ValueError("scanlines must be 1..262")
@@ -58,14 +62,35 @@ def make_events(scanlines: int = SCANLINES, config: TimingConfig | None = None) 
     for cycle in range(ceil(duration / cpu_period)):
         t = cycle * cpu_period
         if t < duration:
-            events.append(BusEvent(t, "cpu", config.cpu_deadline_ns, cycle & 0x7FFF))
+            events.append(BusEvent(t, "cpu", config.cpu_deadline_ns, None, "cpu_cycle"))
     for line in range(scanlines):
         if line >= 240 and line != 261:
             continue
         offset = line * DOTS_PER_SCANLINE * dot_period
-        for dot in range(1, 337, 2):
-            addr = (0x1000 if dot % 8 in (5, 7) else 0x2000) + (dot & 0xFF)
-            events.append(BusEvent(offset + dot * dot_period, "ppu", config.ppu_deadline_ns, addr))
+        for dot in range(1, 341, 2):
+            phase = (dot - 1) % 8
+            if dot <= 256 or 321 <= dot <= 336:
+                kind = (
+                    "bg_nametable", "bg_attribute",
+                    "bg_pattern_low", "bg_pattern_high",
+                )[phase // 2]
+            elif 257 <= dot <= 320:
+                kind = (
+                    "sprite_garbage_nametable"
+                    if phase in (0, 2)
+                    else "sprite_pattern_low"
+                    if phase == 4
+                    else "sprite_pattern_high"
+                )
+            else:  # Dots 337 and 339: two trailing nametable fetches.
+                kind = "dummy_nametable"
+            events.append(BusEvent(
+                offset + dot * dot_period,
+                "ppu",
+                config.ppu_deadline_ns,
+                None,
+                kind,
+            ))
     return sorted(events, key=lambda e: (e.time_ns, e.bus))
 
 

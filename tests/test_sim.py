@@ -1,3 +1,4 @@
+from collections import Counter
 import unittest
 
 from nespico.sim import (
@@ -9,12 +10,32 @@ from nespico.sim import (
 class BusTests(unittest.TestCase):
     def test_one_scanline_event_counts(self):
         events = make_events(1)
-        self.assertEqual(sum(e.bus == "ppu" for e in events), 168)
+        ppu_events = [e for e in events if e.bus == "ppu"]
+        self.assertEqual(len(ppu_events), 170)
+        self.assertEqual(Counter(e.kind for e in ppu_events), Counter({
+            "bg_nametable": 34,
+            "bg_attribute": 34,
+            "bg_pattern_low": 34,
+            "bg_pattern_high": 34,
+            "sprite_garbage_nametable": 16,
+            "sprite_pattern_low": 8,
+            "sprite_pattern_high": 8,
+            "dummy_nametable": 2,
+        }))
+        self.assertTrue(all(e.address is None for e in ppu_events))
         self.assertGreater(sum(e.bus == "cpu" for e in events), 100)
+
+    def test_ppu_slots_follow_two_dot_fetch_phases(self):
+        events = make_events(1)
+        ppu_times = [e.time_ns for e in events if e.bus == "ppu"]
+        dot_period = 1e9 / 5_369_318
+        self.assertEqual(len(ppu_times), 170)
+        for event_index, time_ns in enumerate(ppu_times):
+            self.assertAlmostEqual(time_ns, (1 + 2 * event_index) * dot_period)
 
     def test_full_frame_fetch_count(self):
         events = make_events(262)
-        self.assertEqual(sum(e.bus == "ppu" for e in events), 241 * 168)
+        self.assertEqual(sum(e.bus == "ppu" for e in events), 241 * 170)
 
     def test_nominal_model_fits(self):
         cfg = TimingConfig()

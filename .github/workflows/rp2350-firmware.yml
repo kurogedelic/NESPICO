@@ -1,0 +1,103 @@
+name: RP2350 firmware build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  pio-bringup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out NESPICO
+        uses: actions/checkout@v4
+
+      - name: Validate PIO source timing assumptions
+        run: python3 firmware/pio_bringup/validate_pio_source.py
+
+      - name: Install ARM toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib
+
+      - name: Check out Raspberry Pi Pico SDK 2.3.1
+        uses: actions/checkout@v4
+        with:
+          repository: raspberrypi/pico-sdk
+          ref: 2.3.1
+          path: pico-sdk
+          submodules: recursive
+
+      - name: Configure Raspberry Pi Pico 2 build
+        run: >-
+          cmake -S firmware/pio_bringup -B build/pio-bringup -G Ninja
+          -DPICO_BOARD=pico2
+          -DPICO_SDK_PATH=${{ github.workspace }}/pico-sdk
+
+      - name: Build UF2
+        run: cmake --build build/pio-bringup --parallel
+
+      - name: Build valid Pico 2 header GPIO map
+        run: |
+          cmake -S firmware/pio_bringup -B build/pio-map-pico2-header -G Ninja \
+            -DPICO_BOARD=pico2 \
+            -DPICO_SDK_PATH=${{ github.workspace }}/pico-sdk \
+            -DNESPICO_PIN_A_OUT=20 \
+            -DNESPICO_PIN_A_IN=21 \
+            -DNESPICO_PIN_A_STROBE=22 \
+            -DNESPICO_PIN_B_OUT=26 \
+            -DNESPICO_PIN_B_IN=27 \
+            -DNESPICO_PIN_B_STROBE=28
+          cmake --build build/pio-map-pico2-header --parallel
+
+      - name: Verify invalid loopback GPIO maps are rejected
+        run: |
+          if cmake -S firmware/pio_bringup -B build/bad-duplicate -G Ninja \
+            -DPICO_BOARD=pico2 \
+            -DPICO_SDK_PATH=${{ github.workspace }}/pico-sdk \
+            -DNESPICO_PIN_A_IN=2 > build/bad-duplicate.log 2>&1; then
+            echo "Expected duplicate GPIO assignment to fail configuration"
+            exit 1
+          fi
+          grep -q "duplicate GPIO assignment" build/bad-duplicate.log
+          if cmake -S firmware/pio_bringup -B build/bad-range -G Ninja \
+            -DPICO_BOARD=pico2 \
+            -DPICO_SDK_PATH=${{ github.workspace }}/pico-sdk \
+            -DNESPICO_PIN_A_OUT=30 > build/bad-range.log 2>&1; then
+            echo "Expected out-of-range GPIO assignment to fail configuration"
+            exit 1
+          fi
+          grep -q "outside the RP2350 GPIO range 0..29" build/bad-range.log
+
+      - name: Verify malformed GPIO maps are rejected
+        run: |
+          check_rejected() {
+            name="$1"
+            expected="$2"
+            shift 2
+            if cmake -S firmware/pio_bringup -B "build/$name" -G Ninja \
+              -DPICO_BOARD=pico2 \
+              -DPICO_SDK_PATH=${{ github.workspace }}/pico-sdk \
+              "$@" > "build/$name.log" 2>&1; then
+              echo "Expected $name GPIO configuration to fail"
+              exit 1
+            fi
+            grep -Fq "$expected" "build/$name.log" || {
+              cat "build/$name.log"
+              exit 1
+            }
+          }
+          check_rejected bad-negative "must be an integer GPIO number" \
+            -DNESPICO_PIN_A_OUT=-1
+          check_rejected bad-nonnumeric "must be an integer GPIO number" \
+            -DNESPICO_PIN_A_OUT=oops
+          check_rejected bad-leading-zero-octal "must not use leading zeros" \
+            -DNESPICO_PIN_A_OUT=010
+          check_rejected bad-leading-zero-invalid-octal "must not use leading zeros" \
+            -DNESPICO_PIN_A_OUT=08
+          check_rejected bad-pico2-reserved-gpio "not a Raspberry Pi Pico 2 header GPIO" \
+            -DNESPICO_PIN_A_OUT=24
+          check_rejected bad-pico2-gpio29 "not a Raspberry Pi Pico 2 header GPIO" \
+            -DNESPICO_PIN_A_OUT=29
+          check_rejected bad-cross-lane-duplicate "duplicate GPIO assignment" \
+            -DNESPICO_PIN_B_OUT=2

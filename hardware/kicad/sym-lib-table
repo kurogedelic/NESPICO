@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "NESPICO_Interface") (type "KiCad") (uri "${KIPRJMOD}/NESPICO_Interface.kicad_sym") (options "") (descr "Preliminary NESPICO interface symbols"))
+)

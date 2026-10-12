@@ -1,0 +1,60 @@
+* NESPICO preliminary one-bit bus turnaround experiment
+* Behavioral switch-level model only. NOT a vendor transistor-level model.
+* Parameters are substituted by run_turnaround.py.
+*
+* Assumed topology:
+*   RP2350 GPIO -> SN74AHCT244 -> 5-V cartridge-side data bus
+*   Cartridge-side data bus -> SN74LVC244A (VCC=3.3 V) -> RP2350 GPIO
+*   Separate active-low output enables; the controller must enforce break-before-make.
+*
+* Timing references at CL=50 pF:
+*   SN74AHCT244 enable-to-output maximum used as tEN_AHCT = 13 ns.
+*   SN74LVC244A disable-to-high-Z maximum used as tDIS_LVC = 8 ns at 3.3 V.
+*   Cartridge output disable time is an explicit sweep assumption, not a known NES limit.
+*
+* Equivalent output resistances and cartridge driver are illustrative abstractions.
+* Do not use these results as current, SI, absolute-maximum, or timing sign-off.
+
+V_CART5 cart5 0 DC 5
+V_SENSE_CART cart5 cart_feed 0
+R_CART_OUT cart_feed cart_src 50
+V_CART_EN cart_en 0 PULSE(1 0 150n 0.01n 0.01n 1u 2u)
+S_CART cart_src cart_bus cart_en 0 NESPICO_SW
+
+* AHCT low-side output equivalent: VOL(max)=0.44 V at 8 mA -> 55 ohm
+* linearized only for this screening experiment; the actual IC is nonlinear.
+V_TX_LOW tx_sink 0 DC 0
+R_TX_EQ tx_driver tx_sink 55
+V_TX_EN tx_en 0 PULSE(0 1 153n 0.01n 0.01n 1u 2u)
+S_TX tx_driver cart_bus tx_en 0 NESPICO_SW
+
+C_CART cart_bus 0 50p
+R_CART_LEAK cart_bus 0 1Meg
+
+* Receive path: 5-V input is isolated from the 3.3-V MCU by LVC logic.
+* The ideal source represents its 3.3-V logic output, not its internal circuit.
+V_RX3V3 rx3v3 0 DC 3.3
+V_SENSE_RX rx3v3 rx_feed 0
+R_RX_EQ rx_feed rx_driver 50
+V_RX_EN rx_en 0 PULSE(1 0 108n 0.01n 0.01n 1u 2u)
+S_RX rx_driver mcu_data rx_en 0 NESPICO_SW
+
+* Illustrative RP2350 low-side output equivalent used to expose an OE race.
+* 50 ohm is a placeholder, not a datasheet-derived RP2350 output resistance.
+V_MCU_LOW mcu_sink 0 DC 0
+V_SENSE_MCU mcu_data mcu_feed 0
+R_MCU_EQ mcu_feed mcu_driver 50
+V_MCU_EN mcu_en 0 PULSE(0 1 140.1n 0.01n 0.01n 1u 2u)
+S_MCU mcu_driver mcu_sink mcu_en 0 NESPICO_SW
+
+C_MCU mcu_data 0 50p
+R_MCU_LEAK mcu_data 0 1Meg
+
+.model NESPICO_SW SW(Ron=1m Roff=1e12 Vt=0.5 Vh=0.05)
+.options reltol=1e-4 abstol=1n vntol=1u
+.tran 0.1n 250n 0 0.1n
+.measure tran cart_conflict_peak MAX I(V_SENSE_CART) FROM=100n TO=200n
+.measure tran mcu_conflict_peak MAX I(V_SENSE_RX) FROM=100n TO=200n
+.measure tran cart_write_low MIN V(cart_bus) FROM=190n TO=240n
+.measure tran mcu_write_low MIN V(mcu_data) FROM=190n TO=240n
+.end
